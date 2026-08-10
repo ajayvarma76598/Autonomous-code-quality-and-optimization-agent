@@ -1,0 +1,1780 @@
+================================================== 
+CYCLOMATIC COMPLEXITY (CC) 
+================================================== 
+backend\agents\base_agent.py
+    M 54:4 BaseAgent.execute_with_tools - C
+    C 32:0 BaseAgent - B
+backend\agents\executor.py
+    C 22:0 ToolExecutor - C
+    M 26:4 ToolExecutor.execute - C
+backend\agents\analysis\architecture_agent.py
+    M 23:4 ArchitectureAgent.execute - C
+    C 19:0 ArchitectureAgent - C
+backend\agents\analysis\coverage_agent.py
+    M 27:4 TestCoverageAgent.execute - E
+    C 23:0 TestCoverageAgent - C
+backend\agents\analysis\performance_agent.py
+    M 29:4 PerformanceAgent.execute - D
+    C 25:0 PerformanceAgent - C
+backend\agents\analysis\quality_pipeline.py
+    F 85:0 sonarqube_metrics_node - C
+    F 48:0 repository_parser_node - B
+backend\agents\evaluation\evaluation_agent.py
+    M 38:4 EvaluationAgent.execute - C
+    C 34:0 EvaluationAgent - B
+backend\agents\evaluation\validator.py
+    C 7:0 DeterministicValidator - C
+    M 13:4 DeterministicValidator.validate_output - C
+backend\agents\guardrail\guardrail_agent.py
+    M 11:4 GuardrailAgent.execute - B
+backend\agents\manager\manager_agent.py
+    M 11:4 ManagerAgent.execute - B
+    C 7:0 ManagerAgent - B
+backend\agents\repository\repository_agent.py
+    M 13:4 RepositoryAgent.execute - E
+    C 9:0 RepositoryAgent - C
+backend\api\routers\escalation.py
+    F 78:0 resolve_escalation - C
+backend\api\routers\ingestion.py
+    F 30:0 _detect_languages - D
+    F 475:0 _run_ingestion_pipeline - D
+    F 185:0 _run_ingestion_pipeline - C
+    F 331:0 _run_ingestion_pipeline - C
+    F 74:0 _run_ingestion_pipeline - C
+backend\api\routers\operational.py
+    F 31:0 get_metrics - D
+    F 143:0 get_repository_explorer - B
+backend\api\routers\query.py
+    F 36:0 extract_citations - F
+    F 238:0 execute_query - F
+    F 177:0 extract_tools_used - D
+    F 480:0 execute_query_stream - B
+backend\api\routers\repositories.py
+    F 13:0 create_repository - B
+backend\ingestion\document_parser.py
+    M 23:4 DocumentParser.parse_document - C
+    C 6:0 DocumentParser - B
+backend\ingestion\git.py
+    M 19:4 GitService.clone_repository - B
+    C 10:0 GitService - B
+    M 82:4 GitService.get_latest_commit - B
+backend\ingestion\indexer.py
+    M 22:4 Indexer.index_text - B
+backend\models\evidence.py
+    C 24:0 EvidenceContext - D
+    M 36:4 EvidenceContext.format_for_prompt - D
+backend\repositories\evaluation_repository.py
+    M 15:4 EvaluationRepository.save_evaluation - B
+backend\retrieval\bm25.py
+    M 52:4 BM25Retriever._auto_fit_workspace - C
+    C 5:0 BM25Retriever - B
+    M 90:4 BM25Retriever.retrieve - B
+backend\retrieval\chunk_builder.py
+    M 165:4 ChunkBuilder._build_metadata_content - B
+backend\retrieval\dependency_graph.py
+    M 82:4 DependencyGraph._add_edges_for_node - C
+    M 145:4 DependencyGraph.expand_context - C
+    F 202:0 _parse_import_targets - B
+backend\retrieval\hybrid.py
+    M 245:4 HybridRetriever._rrf_fuse - E
+    F 75:0 _expand_query - C
+    M 178:4 HybridRetriever._expand_with_graph - C
+    C 111:0 HybridRetriever - C
+    M 124:4 HybridRetriever.retrieve - B
+backend\retrieval\planner.py
+    M 16:4 QueryPlanner.plan - B
+backend\retrieval\reranker.py
+    M 68:4 Reranker._score_item - B
+backend\retrieval\summarizer.py
+    M 156:4 CodeSummarizer._call_llm_batch - B
+    F 59:0 _fallback_summary - B
+    M 125:4 CodeSummarizer.batch_summarize - B
+    C 99:0 CodeSummarizer - B
+    M 110:4 CodeSummarizer.summarize_node - B
+backend\retrieval\universal_parser.py
+    F 276:0 _parse_markdown - B
+    F 639:0 build_chunk_content - B
+    F 124:0 _load_ts_lang - B
+    F 159:0 detect_content_type - B
+    F 327:0 _parse_sql - B
+    F 461:0 _extract_calls - B
+    F 491:0 _get_docstring - B
+    F 598:0 parse_file - B
+backend\retrieval\vector_store.py
+    C 25:0 VectorStore - C
+    M 26:4 VectorStore.retrieve - C
+backend\scripts\seed_capstone_data.py
+    F 22:0 seed_data - B
+backend\services\cache_service.py
+    M 50:4 CacheService.check_exact_cache - B
+    M 73:4 CacheService.check_cache - B
+backend\services\embedding_service.py
+    M 35:4 EmbeddingService.generate_embeddings - B
+backend\services\pii_service.py
+    M 25:4 PIIService.anonymize_text - B
+backend\services\retrieval_cache.py
+    M 68:4 RetrievalCache.set - B
+backend\services\evidence\metadata_provider.py
+    M 17:4 MetadataProvider.fetch - C
+    C 8:0 MetadataProvider - B
+backend\services\evidence\sonar_provider.py
+    M 17:4 SonarProvider.fetch - D
+    C 8:0 SonarProvider - C
+backend\services\evidence\sql_provider.py
+    M 17:4 SQLProvider.fetch - D
+    C 8:0 SQLProvider - B
+backend\services\evidence\validator.py
+    C 7:0 EvidenceValidator - B
+    M 14:4 EvidenceValidator.validate - B
+backend\services\evidence\vector_provider.py
+    M 17:4 VectorProvider.fetch - C
+    C 8:0 VectorProvider - B
+backend\services\observability\langfuse.py
+    M 78:4 LangfuseService.trace - B
+    M 62:4 LangfuseService.score - B
+backend\services\repository\indexer.py
+    F 324:0 _upsert_code_objects - B
+    F 74:0 _should_index - B
+    F 379:0 _write_dependency_edges - B
+backend\tests\test_langfuse_dataset.py
+    F 17:0 run_evaluation - F
+backend\tools\analysis_tools.py
+    F 21:0 analyze_code_quality - B
+    F 71:0 get_code_issues - B
+backend\tools\retrieval_tools.py
+    F 8:0 hybrid_search - B
+backend\utils\document_ingestion.py
+    F 53:0 ingest_documents_if_missing - B
+backend\utils\seed_database.py
+    F 45:0 seed_data - C
+backend\workflows\intent_classifier.py
+    M 53:4 IntentClassifier.classify - B
+    C 14:0 IntentClassifier - B
+backend\workflows\router.py
+    M 186:4 WorkflowRouter.invoke - D
+    C 36:0 WorkflowRouter - C
+backend\workflows\state.py
+    F 49:0 merge_dicts - B
+
+104 blocks (classes, functions, methods) analyzed.
+Average complexity: C (13.317307692307692)
+ 
+================================================== 
+MAINTAINABILITY INDEX (MI) 
+================================================== 
+backend\main.py - A
+backend\agents\base_agent.py - A
+backend\agents\executor.py - A
+backend\agents\__init__.py - A
+backend\agents\analysis\architecture_agent.py - A
+backend\agents\analysis\coverage_agent.py - A
+backend\agents\analysis\performance_agent.py - A
+backend\agents\analysis\quality_pipeline.py - A
+backend\agents\analysis\reporter_agent.py - A
+backend\agents\analysis\__init__.py - A
+backend\agents\documentation\documentation_agent.py - A
+backend\agents\documentation\__init__.py - A
+backend\agents\evaluation\evaluation_agent.py - A
+backend\agents\evaluation\validator.py - A
+backend\agents\evaluation\__init__.py - A
+backend\agents\guardrail\guardrail_agent.py - A
+backend\agents\manager\manager_agent.py - A
+backend\agents\manager\__init__.py - A
+backend\agents\repository\repository_agent.py - A
+backend\agents\repository\__init__.py - A
+backend\api\auth.py - A
+backend\api\dependencies.py - A
+backend\api\error_handlers.py - A
+backend\api\middleware.py - A
+backend\api\__init__.py - A
+backend\api\routers\escalation.py - A
+backend\api\routers\executions.py - A
+backend\api\routers\ingestion.py - A
+backend\api\routers\operational.py - A
+backend\api\routers\query.py - B
+backend\api\routers\repositories.py - A
+backend\api\routers\sessions.py - A
+backend\api\routers\__init__.py - A
+backend\config\__init__.py - A
+backend\database\base.py - A
+backend\database\session.py - A
+backend\database\__init__.py - A
+backend\database\migrations\__init__.py - A
+backend\database\models\models.py - A
+backend\database\models\__init__.py - A
+backend\ingestion\document_parser.py - A
+backend\ingestion\git.py - A
+backend\ingestion\indexer.py - A
+backend\ingestion\tree_sitter_parser.py - A
+backend\ingestion\__init__.py - A
+backend\models\analysis.py - A
+backend\models\evidence.py - A
+backend\models\quality.py - A
+backend\models\repository.py - A
+backend\prompts\registry.py - A
+backend\prompts\__init__.py - A
+backend\prompts\templates\__init__.py - A
+backend\repositories\base_repository.py - A
+backend\repositories\evaluation_repository.py - A
+backend\repositories\query_repository.py - A
+backend\repositories\repository_repository.py - A
+backend\repositories\session_repository.py - A
+backend\repositories\__init__.py - A
+backend\retrieval\bm25.py - A
+backend\retrieval\chunk_builder.py - A
+backend\retrieval\dependency_graph.py - A
+backend\retrieval\hybrid.py - A
+backend\retrieval\indexer.py - A
+backend\retrieval\models.py - A
+backend\retrieval\planner.py - A
+backend\retrieval\reranker.py - A
+backend\retrieval\summarizer.py - A
+backend\retrieval\universal_parser.py - A
+backend\retrieval\vector_store.py - A
+backend\retrieval\__init__.py - A
+backend\schemas\common.py - A
+backend\schemas\execution.py - A
+backend\schemas\repository.py - A
+backend\schemas\session.py - A
+backend\schemas\__init__.py - A
+backend\scripts\clear_db.py - A
+backend\scripts\insert_dummy_user.py - A
+backend\scripts\push_prompts.py - A
+backend\scripts\reset_db.py - A
+backend\scripts\seed_capstone_data.py - A
+backend\scripts\seed_user.py - A
+backend\scripts\sync_prompts.py - A
+backend\services\base_service.py - A
+backend\services\cache_service.py - A
+backend\services\embedding_service.py - A
+backend\services\evidence_service.py - A
+backend\services\llm.py - A
+backend\services\persistence_service.py - A
+backend\services\pii_service.py - A
+backend\services\quality_service.py - A
+backend\services\repository_service.py - A
+backend\services\retrieval_cache.py - A
+backend\services\__init__.py - A
+backend\services\evidence\base_provider.py - A
+backend\services\evidence\metadata_provider.py - A
+backend\services\evidence\sonar_provider.py - A
+backend\services\evidence\sql_provider.py - A
+backend\services\evidence\validator.py - A
+backend\services\evidence\vector_provider.py - A
+backend\services\observability\langfuse.py - A
+backend\services\observability\__init__.py - A
+backend\services\repository\cache.py - A
+backend\services\repository\git_service.py - A
+backend\services\repository\indexer.py - A
+backend\services\repository\loader.py - A
+backend\tests\test_langfuse_dataset.py - A
+backend\tests\test_sql_agent.py - A
+backend\tools\analysis_tools.py - A
+backend\tools\documentation_tools.py - A
+backend\tools\parsing_tools.py - A
+backend\tools\repository_tools.py - A
+backend\tools\retrieval_tools.py - A
+backend\tools\sql_tools.py - A
+backend\utils\document_ingestion.py - A
+backend\utils\logging_config.py - A
+backend\utils\seed_database.py - A
+backend\utils\upload_dataset.py - A
+backend\utils\__init__.py - A
+backend\workflows\intent_classifier.py - A
+backend\workflows\router.py - A
+backend\workflows\state.py - A
+backend\workflows\__init__.py - A
+backend\workflows\graphs\__init__.py - A
+backend\workflows\nodes\__init__.py - A
+ 
+================================================== 
+RAW METRICS 
+================================================== 
+backend\main.py
+    LOC: 75
+    LLOC: 36
+    SLOC: 46
+    Comments: 14
+    Single comments: 13
+    Multi: 0
+    Blank: 16
+    - Comment Stats
+        (C % L): 19%
+        (C % S): 30%
+        (C + M % L): 19%
+backend\agents\base_agent.py
+    LOC: 118
+    LLOC: 78
+    SLOC: 89
+    Comments: 3
+    Single comments: 3
+    Multi: 7
+    Blank: 19
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 3%
+        (C + M % L): 8%
+backend\agents\executor.py
+    LOC: 108
+    LLOC: 82
+    SLOC: 73
+    Comments: 7
+    Single comments: 8
+    Multi: 3
+    Blank: 24
+    - Comment Stats
+        (C % L): 6%
+        (C % S): 10%
+        (C + M % L): 9%
+backend\agents\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\agents\analysis\architecture_agent.py
+    LOC: 104
+    LLOC: 63
+    SLOC: 76
+    Comments: 6
+    Single comments: 6
+    Multi: 4
+    Blank: 18
+    - Comment Stats
+        (C % L): 6%
+        (C % S): 8%
+        (C + M % L): 10%
+backend\agents\analysis\coverage_agent.py
+    LOC: 165
+    LLOC: 116
+    SLOC: 123
+    Comments: 13
+    Single comments: 12
+    Multi: 4
+    Blank: 26
+    - Comment Stats
+        (C % L): 8%
+        (C % S): 11%
+        (C + M % L): 10%
+backend\agents\analysis\performance_agent.py
+    LOC: 154
+    LLOC: 112
+    SLOC: 120
+    Comments: 9
+    Single comments: 9
+    Multi: 4
+    Blank: 21
+    - Comment Stats
+        (C % L): 6%
+        (C % S): 8%
+        (C + M % L): 8%
+backend\agents\analysis\quality_pipeline.py
+    LOC: 216
+    LLOC: 152
+    SLOC: 161
+    Comments: 13
+    Single comments: 15
+    Multi: 0
+    Blank: 40
+    - Comment Stats
+        (C % L): 6%
+        (C % S): 8%
+        (C + M % L): 6%
+backend\agents\analysis\reporter_agent.py
+    LOC: 59
+    LLOC: 32
+    SLOC: 41
+    Comments: 2
+    Single comments: 2
+    Multi: 4
+    Blank: 12
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 5%
+        (C + M % L): 10%
+backend\agents\analysis\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\agents\documentation\documentation_agent.py
+    LOC: 30
+    LLOC: 21
+    SLOC: 22
+    Comments: 1
+    Single comments: 1
+    Multi: 3
+    Blank: 4
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 5%
+        (C + M % L): 13%
+backend\agents\documentation\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\agents\evaluation\evaluation_agent.py
+    LOC: 140
+    LLOC: 95
+    SLOC: 104
+    Comments: 11
+    Single comments: 11
+    Multi: 5
+    Blank: 20
+    - Comment Stats
+        (C % L): 8%
+        (C % S): 11%
+        (C + M % L): 11%
+backend\agents\evaluation\validator.py
+    LOC: 87
+    LLOC: 29
+    SLOC: 58
+    Comments: 9
+    Single comments: 9
+    Multi: 8
+    Blank: 12
+    - Comment Stats
+        (C % L): 10%
+        (C % S): 16%
+        (C + M % L): 20%
+backend\agents\evaluation\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\agents\guardrail\guardrail_agent.py
+    LOC: 73
+    LLOC: 47
+    SLOC: 53
+    Comments: 3
+    Single comments: 3
+    Multi: 4
+    Blank: 13
+    - Comment Stats
+        (C % L): 4%
+        (C % S): 6%
+        (C + M % L): 10%
+backend\agents\manager\manager_agent.py
+    LOC: 89
+    LLOC: 59
+    SLOC: 67
+    Comments: 4
+    Single comments: 4
+    Multi: 3
+    Blank: 15
+    - Comment Stats
+        (C % L): 4%
+        (C % S): 6%
+        (C + M % L): 8%
+backend\agents\manager\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\agents\repository\repository_agent.py
+    LOC: 120
+    LLOC: 91
+    SLOC: 89
+    Comments: 9
+    Single comments: 9
+    Multi: 4
+    Blank: 18
+    - Comment Stats
+        (C % L): 8%
+        (C % S): 10%
+        (C + M % L): 11%
+backend\agents\repository\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\api\auth.py
+    LOC: 78
+    LLOC: 46
+    SLOC: 54
+    Comments: 7
+    Single comments: 7
+    Multi: 7
+    Blank: 10
+    - Comment Stats
+        (C % L): 9%
+        (C % S): 13%
+        (C + M % L): 18%
+backend\api\dependencies.py
+    LOC: 17
+    LLOC: 10
+    SLOC: 9
+    Comments: 2
+    Single comments: 2
+    Multi: 4
+    Blank: 2
+    - Comment Stats
+        (C % L): 12%
+        (C % S): 22%
+        (C + M % L): 35%
+backend\api\error_handlers.py
+    LOC: 27
+    LLOC: 15
+    SLOC: 17
+    Comments: 0
+    Single comments: 0
+    Multi: 7
+    Blank: 3
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 26%
+backend\api\middleware.py
+    LOC: 27
+    LLOC: 19
+    SLOC: 18
+    Comments: 2
+    Single comments: 2
+    Multi: 0
+    Blank: 7
+    - Comment Stats
+        (C % L): 7%
+        (C % S): 11%
+        (C + M % L): 7%
+backend\api\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\api\routers\escalation.py
+    LOC: 131
+    LLOC: 103
+    SLOC: 97
+    Comments: 6
+    Single comments: 6
+    Multi: 6
+    Blank: 22
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 6%
+        (C + M % L): 9%
+backend\api\routers\executions.py
+    LOC: 40
+    LLOC: 22
+    SLOC: 28
+    Comments: 1
+    Single comments: 1
+    Multi: 6
+    Blank: 5
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 4%
+        (C + M % L): 18%
+backend\api\routers\ingestion.py
+    LOC: 669
+    LLOC: 407
+    SLOC: 529
+    Comments: 43
+    Single comments: 38
+    Multi: 0
+    Blank: 102
+    - Comment Stats
+        (C % L): 6%
+        (C % S): 8%
+        (C + M % L): 6%
+backend\api\routers\operational.py
+    LOC: 184
+    LLOC: 95
+    SLOC: 141
+    Comments: 7
+    Single comments: 7
+    Multi: 10
+    Blank: 26
+    - Comment Stats
+        (C % L): 4%
+        (C % S): 5%
+        (C + M % L): 9%
+backend\api\routers\query.py
+    LOC: 665
+    LLOC: 407
+    SLOC: 544
+    Comments: 22
+    Single comments: 22
+    Multi: 18
+    Blank: 81
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 6%
+backend\api\routers\repositories.py
+    LOC: 157
+    LLOC: 75
+    SLOC: 118
+    Comments: 4
+    Single comments: 4
+    Multi: 21
+    Blank: 14
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 3%
+        (C + M % L): 16%
+backend\api\routers\sessions.py
+    LOC: 78
+    LLOC: 40
+    SLOC: 55
+    Comments: 0
+    Single comments: 0
+    Multi: 15
+    Blank: 8
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 19%
+backend\api\routers\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\config\__init__.py
+    LOC: 47
+    LLOC: 43
+    SLOC: 32
+    Comments: 5
+    Single comments: 5
+    Multi: 0
+    Blank: 10
+    - Comment Stats
+        (C % L): 11%
+        (C % S): 16%
+        (C + M % L): 11%
+backend\database\base.py
+    LOC: 3
+    LLOC: 0
+    SLOC: 0
+    Comments: 2
+    Single comments: 2
+    Multi: 0
+    Blank: 1
+    - Comment Stats
+        (C % L): 67%
+        (C % S): 200%
+        (C + M % L): 67%
+backend\database\session.py
+    LOC: 45
+    LLOC: 30
+    SLOC: 28
+    Comments: 3
+    Single comments: 3
+    Multi: 7
+    Blank: 7
+    - Comment Stats
+        (C % L): 7%
+        (C % S): 11%
+        (C + M % L): 22%
+backend\database\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\database\migrations\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\database\models\models.py
+    LOC: 317
+    LLOC: 267
+    SLOC: 260
+    Comments: 3
+    Single comments: 2
+    Multi: 0
+    Blank: 55
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 1%
+        (C + M % L): 1%
+backend\database\models\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\ingestion\document_parser.py
+    LOC: 71
+    LLOC: 53
+    SLOC: 58
+    Comments: 2
+    Single comments: 2
+    Multi: 4
+    Blank: 7
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 3%
+        (C + M % L): 8%
+backend\ingestion\git.py
+    LOC: 122
+    LLOC: 66
+    SLOC: 98
+    Comments: 4
+    Single comments: 4
+    Multi: 9
+    Blank: 11
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 11%
+backend\ingestion\indexer.py
+    LOC: 86
+    LLOC: 44
+    SLOC: 61
+    Comments: 6
+    Single comments: 6
+    Multi: 4
+    Blank: 15
+    - Comment Stats
+        (C % L): 7%
+        (C % S): 10%
+        (C + M % L): 12%
+backend\ingestion\tree_sitter_parser.py
+    LOC: 130
+    LLOC: 75
+    SLOC: 91
+    Comments: 9
+    Single comments: 10
+    Multi: 7
+    Blank: 22
+    - Comment Stats
+        (C % L): 7%
+        (C % S): 10%
+        (C + M % L): 12%
+backend\ingestion\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\models\analysis.py
+    LOC: 17
+    LLOC: 26
+    SLOC: 15
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 2
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\models\evidence.py
+    LOC: 73
+    LLOC: 88
+    SLOC: 63
+    Comments: 0
+    Single comments: 1
+    Multi: 0
+    Blank: 9
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\models\quality.py
+    LOC: 21
+    LLOC: 34
+    SLOC: 19
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 2
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\models\repository.py
+    LOC: 15
+    LLOC: 22
+    SLOC: 13
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 2
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\prompts\registry.py
+    LOC: 132
+    LLOC: 7
+    SLOC: 98
+    Comments: 0
+    Single comments: 0
+    Multi: 10
+    Blank: 24
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 8%
+backend\prompts\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\prompts\templates\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\repositories\base_repository.py
+    LOC: 63
+    LLOC: 42
+    SLOC: 48
+    Comments: 0
+    Single comments: 0
+    Multi: 3
+    Blank: 12
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 5%
+backend\repositories\evaluation_repository.py
+    LOC: 79
+    LLOC: 33
+    SLOC: 62
+    Comments: 4
+    Single comments: 3
+    Multi: 4
+    Blank: 10
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 6%
+        (C + M % L): 10%
+backend\repositories\query_repository.py
+    LOC: 11
+    LLOC: 9
+    SLOC: 9
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 2
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\repositories\repository_repository.py
+    LOC: 14
+    LLOC: 11
+    SLOC: 11
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 3
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\repositories\session_repository.py
+    LOC: 14
+    LLOC: 11
+    SLOC: 11
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 3
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\repositories\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\retrieval\bm25.py
+    LOC: 117
+    LLOC: 78
+    SLOC: 87
+    Comments: 2
+    Single comments: 5
+    Multi: 8
+    Blank: 17
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 2%
+        (C + M % L): 9%
+backend\retrieval\chunk_builder.py
+    LOC: 215
+    LLOC: 86
+    SLOC: 136
+    Comments: 23
+    Single comments: 20
+    Multi: 30
+    Blank: 29
+    - Comment Stats
+        (C % L): 11%
+        (C % S): 17%
+        (C + M % L): 25%
+backend\retrieval\dependency_graph.py
+    LOC: 241
+    LLOC: 152
+    SLOC: 149
+    Comments: 26
+    Single comments: 23
+    Multi: 27
+    Blank: 42
+    - Comment Stats
+        (C % L): 11%
+        (C % S): 17%
+        (C + M % L): 22%
+backend\retrieval\hybrid.py
+    LOC: 358
+    LLOC: 164
+    SLOC: 250
+    Comments: 36
+    Single comments: 32
+    Multi: 21
+    Blank: 55
+    - Comment Stats
+        (C % L): 10%
+        (C % S): 14%
+        (C + M % L): 16%
+backend\retrieval\indexer.py
+    LOC: 17
+    LLOC: 10
+    SLOC: 7
+    Comments: 0
+    Single comments: 2
+    Multi: 4
+    Blank: 4
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 24%
+backend\retrieval\models.py
+    LOC: 19
+    LLOC: 33
+    SLOC: 18
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 1
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\retrieval\planner.py
+    LOC: 35
+    LLOC: 29
+    SLOC: 26
+    Comments: 1
+    Single comments: 1
+    Multi: 3
+    Blank: 5
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 11%
+backend\retrieval\reranker.py
+    LOC: 107
+    LLOC: 59
+    SLOC: 65
+    Comments: 5
+    Single comments: 4
+    Multi: 17
+    Blank: 21
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 8%
+        (C + M % L): 21%
+backend\retrieval\summarizer.py
+    LOC: 179
+    LLOC: 92
+    SLOC: 105
+    Comments: 25
+    Single comments: 25
+    Multi: 16
+    Blank: 33
+    - Comment Stats
+        (C % L): 14%
+        (C % S): 24%
+        (C + M % L): 23%
+backend\retrieval\universal_parser.py
+    LOC: 706
+    LLOC: 378
+    SLOC: 469
+    Comments: 102
+    Single comments: 94
+    Multi: 27
+    Blank: 116
+    - Comment Stats
+        (C % L): 14%
+        (C % S): 22%
+        (C + M % L): 18%
+backend\retrieval\vector_store.py
+    LOC: 126
+    LLOC: 44
+    SLOC: 85
+    Comments: 7
+    Single comments: 5
+    Multi: 17
+    Blank: 19
+    - Comment Stats
+        (C % L): 6%
+        (C % S): 8%
+        (C + M % L): 19%
+backend\retrieval\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\schemas\common.py
+    LOC: 36
+    LLOC: 42
+    SLOC: 28
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 8
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\schemas\execution.py
+    LOC: 31
+    LLOC: 37
+    SLOC: 24
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 7
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\schemas\repository.py
+    LOC: 62
+    LLOC: 83
+    SLOC: 50
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 12
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\schemas\session.py
+    LOC: 53
+    LLOC: 67
+    SLOC: 42
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 11
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\schemas\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\scripts\clear_db.py
+    LOC: 25
+    LLOC: 20
+    SLOC: 20
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 5
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\scripts\insert_dummy_user.py
+    LOC: 34
+    LLOC: 24
+    SLOC: 29
+    Comments: 1
+    Single comments: 1
+    Multi: 0
+    Blank: 4
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 3%
+        (C + M % L): 3%
+backend\scripts\push_prompts.py
+    LOC: 63
+    LLOC: 29
+    SLOC: 49
+    Comments: 3
+    Single comments: 3
+    Multi: 0
+    Blank: 11
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 6%
+        (C + M % L): 5%
+backend\scripts\reset_db.py
+    LOC: 30
+    LLOC: 22
+    SLOC: 22
+    Comments: 2
+    Single comments: 2
+    Multi: 0
+    Blank: 6
+    - Comment Stats
+        (C % L): 7%
+        (C % S): 9%
+        (C + M % L): 7%
+backend\scripts\seed_capstone_data.py
+    LOC: 173
+    LLOC: 54
+    SLOC: 150
+    Comments: 7
+    Single comments: 6
+    Multi: 0
+    Blank: 17
+    - Comment Stats
+        (C % L): 4%
+        (C % S): 5%
+        (C + M % L): 4%
+backend\scripts\seed_user.py
+    LOC: 75
+    LLOC: 42
+    SLOC: 62
+    Comments: 4
+    Single comments: 4
+    Multi: 0
+    Blank: 9
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 6%
+        (C + M % L): 5%
+backend\scripts\sync_prompts.py
+    LOC: 30
+    LLOC: 16
+    SLOC: 25
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 5
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\services\base_service.py
+    LOC: 44
+    LLOC: 33
+    SLOC: 34
+    Comments: 0
+    Single comments: 0
+    Multi: 3
+    Blank: 7
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 7%
+backend\services\cache_service.py
+    LOC: 143
+    LLOC: 93
+    SLOC: 106
+    Comments: 4
+    Single comments: 4
+    Multi: 14
+    Blank: 19
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 13%
+backend\services\embedding_service.py
+    LOC: 74
+    LLOC: 55
+    SLOC: 58
+    Comments: 0
+    Single comments: 0
+    Multi: 9
+    Blank: 7
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 12%
+backend\services\evidence_service.py
+    LOC: 76
+    LLOC: 54
+    SLOC: 53
+    Comments: 6
+    Single comments: 6
+    Multi: 4
+    Blank: 13
+    - Comment Stats
+        (C % L): 8%
+        (C % S): 11%
+        (C + M % L): 13%
+backend\services\llm.py
+    LOC: 36
+    LLOC: 24
+    SLOC: 30
+    Comments: 1
+    Single comments: 1
+    Multi: 0
+    Blank: 5
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 3%
+        (C + M % L): 3%
+backend\services\persistence_service.py
+    LOC: 125
+    LLOC: 77
+    SLOC: 79
+    Comments: 16
+    Single comments: 21
+    Multi: 3
+    Blank: 22
+    - Comment Stats
+        (C % L): 13%
+        (C % S): 20%
+        (C + M % L): 15%
+backend\services\pii_service.py
+    LOC: 50
+    LLOC: 35
+    SLOC: 37
+    Comments: 1
+    Single comments: 1
+    Multi: 3
+    Blank: 9
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 3%
+        (C + M % L): 8%
+backend\services\quality_service.py
+    LOC: 57
+    LLOC: 28
+    SLOC: 48
+    Comments: 0
+    Single comments: 0
+    Multi: 3
+    Blank: 6
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 5%
+backend\services\repository_service.py
+    LOC: 115
+    LLOC: 79
+    SLOC: 88
+    Comments: 7
+    Single comments: 7
+    Multi: 0
+    Blank: 20
+    - Comment Stats
+        (C % L): 6%
+        (C % S): 8%
+        (C + M % L): 6%
+backend\services\retrieval_cache.py
+    LOC: 97
+    LLOC: 72
+    SLOC: 79
+    Comments: 4
+    Single comments: 3
+    Multi: 4
+    Blank: 11
+    - Comment Stats
+        (C % L): 4%
+        (C % S): 5%
+        (C + M % L): 8%
+backend\services\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\services\evidence\base_provider.py
+    LOC: 19
+    LLOC: 16
+    SLOC: 15
+    Comments: 0
+    Single comments: 1
+    Multi: 0
+    Blank: 3
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\services\evidence\metadata_provider.py
+    LOC: 61
+    LLOC: 43
+    SLOC: 50
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 11
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\services\evidence\sonar_provider.py
+    LOC: 78
+    LLOC: 62
+    SLOC: 69
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 9
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\services\evidence\sql_provider.py
+    LOC: 97
+    LLOC: 65
+    SLOC: 81
+    Comments: 2
+    Single comments: 2
+    Multi: 0
+    Blank: 14
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 2%
+        (C + M % L): 2%
+backend\services\evidence\validator.py
+    LOC: 36
+    LLOC: 24
+    SLOC: 23
+    Comments: 2
+    Single comments: 2
+    Multi: 4
+    Blank: 7
+    - Comment Stats
+        (C % L): 6%
+        (C % S): 9%
+        (C + M % L): 17%
+backend\services\evidence\vector_provider.py
+    LOC: 92
+    LLOC: 64
+    SLOC: 68
+    Comments: 9
+    Single comments: 9
+    Multi: 0
+    Blank: 15
+    - Comment Stats
+        (C % L): 10%
+        (C % S): 13%
+        (C + M % L): 10%
+backend\services\observability\langfuse.py
+    LOC: 119
+    LLOC: 78
+    SLOC: 84
+    Comments: 1
+    Single comments: 1
+    Multi: 19
+    Blank: 15
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 1%
+        (C + M % L): 17%
+backend\services\observability\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\services\repository\cache.py
+    LOC: 14
+    LLOC: 12
+    SLOC: 11
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 3
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\services\repository\git_service.py
+    LOC: 20
+    LLOC: 17
+    SLOC: 17
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 3
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\services\repository\indexer.py
+    LOC: 478
+    LLOC: 243
+    SLOC: 337
+    Comments: 40
+    Single comments: 43
+    Multi: 26
+    Blank: 72
+    - Comment Stats
+        (C % L): 8%
+        (C % S): 12%
+        (C + M % L): 14%
+backend\services\repository\loader.py
+    LOC: 36
+    LLOC: 29
+    SLOC: 32
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 4
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\tests\test_langfuse_dataset.py
+    LOC: 210
+    LLOC: 132
+    SLOC: 161
+    Comments: 16
+    Single comments: 14
+    Multi: 4
+    Blank: 31
+    - Comment Stats
+        (C % L): 8%
+        (C % S): 10%
+        (C + M % L): 10%
+backend\tests\test_sql_agent.py
+    LOC: 42
+    LLOC: 24
+    SLOC: 33
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 9
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\tools\analysis_tools.py
+    LOC: 117
+    LLOC: 88
+    SLOC: 81
+    Comments: 3
+    Single comments: 3
+    Multi: 9
+    Blank: 24
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 10%
+backend\tools\documentation_tools.py
+    LOC: 9
+    LLOC: 6
+    SLOC: 5
+    Comments: 0
+    Single comments: 0
+    Multi: 3
+    Blank: 1
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 33%
+backend\tools\parsing_tools.py
+    LOC: 38
+    LLOC: 26
+    SLOC: 24
+    Comments: 2
+    Single comments: 2
+    Multi: 8
+    Blank: 4
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 8%
+        (C + M % L): 26%
+backend\tools\repository_tools.py
+    LOC: 21
+    LLOC: 15
+    SLOC: 12
+    Comments: 0
+    Single comments: 0
+    Multi: 7
+    Blank: 2
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 33%
+backend\tools\retrieval_tools.py
+    LOC: 27
+    LLOC: 21
+    SLOC: 20
+    Comments: 1
+    Single comments: 1
+    Multi: 4
+    Blank: 2
+    - Comment Stats
+        (C % L): 4%
+        (C % S): 5%
+        (C + M % L): 19%
+backend\tools\sql_tools.py
+    LOC: 45
+    LLOC: 29
+    SLOC: 28
+    Comments: 1
+    Single comments: 1
+    Multi: 10
+    Blank: 6
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 4%
+        (C + M % L): 24%
+backend\utils\document_ingestion.py
+    LOC: 127
+    LLOC: 76
+    SLOC: 98
+    Comments: 4
+    Single comments: 5
+    Multi: 4
+    Blank: 20
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 6%
+backend\utils\logging_config.py
+    LOC: 60
+    LLOC: 31
+    SLOC: 41
+    Comments: 4
+    Single comments: 4
+    Multi: 4
+    Blank: 11
+    - Comment Stats
+        (C % L): 7%
+        (C % S): 10%
+        (C + M % L): 13%
+backend\utils\seed_database.py
+    LOC: 245
+    LLOC: 106
+    SLOC: 209
+    Comments: 8
+    Single comments: 8
+    Multi: 0
+    Blank: 28
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 3%
+backend\utils\upload_dataset.py
+    LOC: 79
+    LLOC: 48
+    SLOC: 53
+    Comments: 8
+    Single comments: 8
+    Multi: 3
+    Blank: 15
+    - Comment Stats
+        (C % L): 10%
+        (C % S): 15%
+        (C + M % L): 14%
+backend\utils\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\workflows\intent_classifier.py
+    LOC: 86
+    LLOC: 40
+    SLOC: 56
+    Comments: 11
+    Single comments: 7
+    Multi: 12
+    Blank: 11
+    - Comment Stats
+        (C % L): 13%
+        (C % S): 20%
+        (C + M % L): 27%
+backend\workflows\router.py
+    LOC: 313
+    LLOC: 194
+    SLOC: 225
+    Comments: 21
+    Single comments: 20
+    Multi: 12
+    Blank: 56
+    - Comment Stats
+        (C % L): 7%
+        (C % S): 9%
+        (C + M % L): 11%
+backend\workflows\state.py
+    LOC: 121
+    LLOC: 130
+    SLOC: 95
+    Comments: 4
+    Single comments: 4
+    Multi: 4
+    Blank: 18
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 7%
+backend\workflows\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\workflows\graphs\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+backend\workflows\nodes\__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
