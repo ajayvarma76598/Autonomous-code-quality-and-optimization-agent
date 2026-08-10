@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Check, X, BarChart3, Activity, ShieldAlert, GitCommit, Trash2, Folder, Clock } from 'lucide-react';
+import { AlertTriangle, Check, X, BarChart3, Activity, ShieldAlert, Trash2, Folder, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const ManagerDashboard = () => {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const WS_URL = API_URL.replace(/^http/, 'ws');
   const [escalations, setEscalations] = useState<any[]>([]);
   const [repositories, setRepositories] = useState<any[]>([]);
   const [snapshots, setSnapshots] = useState<{ [repoId: string]: any[] }>({});
@@ -23,7 +25,7 @@ const ManagerDashboard = () => {
 
   const fetchRepos = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/v1/repositories/', {
+      const res = await fetch(`${API_URL}/api/v1/repositories/`, {
         headers: await getHeaders()
       });
       if (res.ok) setRepositories(await res.json());
@@ -32,7 +34,7 @@ const ManagerDashboard = () => {
 
   const fetchMetrics = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/v1/metrics', {
+      const res = await fetch(`${API_URL}/api/v1/metrics`, {
         headers: await getHeaders()
       });
       if (res.ok) {
@@ -48,7 +50,7 @@ const ManagerDashboard = () => {
 
   const fetchPendingEscalations = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/v1/escalation/pending', {
+      const res = await fetch(`${API_URL}/api/v1/escalation/pending`, {
         headers: await getHeaders()
       });
       if (res.ok) {
@@ -70,7 +72,7 @@ const ManagerDashboard = () => {
     let reconnectTimer: ReturnType<typeof setTimeout>;
 
     const connectWebSocket = () => {
-      ws = new WebSocket('ws://localhost:8000/api/v1/escalation/ws');
+      ws = new WebSocket(`${WS_URL}/api/v1/escalation/ws`);
       
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
@@ -105,7 +107,7 @@ const ManagerDashboard = () => {
     // Optimistic UI update: immediately remove the escalation to load the new state
     setEscalations(prev => prev.filter(e => e.session_id !== sessionId));
     try {
-      await fetch('http://localhost:8000/api/v1/escalation/resolve', {
+      await fetch(`${API_URL}/api/v1/escalation/resolve`, {
         method: 'POST',
         headers: await getHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ session_id: sessionId, action, feedback: 'Resolved by manager.' })
@@ -123,7 +125,7 @@ const ManagerDashboard = () => {
   const handleDeleteRepo = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this repository? This cannot be undone.")) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/repositories/${id}`, { 
+      const res = await fetch(`${API_URL}/api/v1/repositories/${id}`, { 
         method: 'DELETE',
         headers: await getHeaders()
       });
@@ -149,7 +151,7 @@ const ManagerDashboard = () => {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/repositories/${id}/snapshots`, {
+      const res = await fetch(`${API_URL}/api/v1/repositories/${id}/snapshots`, {
         headers: await getHeaders()
       });
       if (res.ok) {

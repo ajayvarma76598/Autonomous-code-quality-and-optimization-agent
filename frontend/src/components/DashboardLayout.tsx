@@ -1,12 +1,9 @@
-import React from 'react';
-import { NavLink, Outlet, Navigate, useNavigate } from 'react-router-dom';
-import { Code, Activity, Search, LogOut, BarChart3 } from 'lucide-react';
+import { NavLink, Outlet } from 'react-router-dom';
+import { Activity, Search, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const DashboardLayout = () => {
   const { role, logout, user } = useAuth();
-  const navigate = useNavigate();
-
 
   const handleLogout = () => {
     logout();
