@@ -21,7 +21,11 @@ def create_app() -> FastAPI:
     # CORS
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"], # In production, restrict this
+        allow_origins=[
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://autonomous-code-quality-and-optimization-rg5g.onrender.com"
+        ],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
