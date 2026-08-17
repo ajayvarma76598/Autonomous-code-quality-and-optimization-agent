@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const ManagerDashboard = () => {
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/+$/, '');
   const WS_URL = API_URL.replace(/^http/, 'ws');
   const [escalations, setEscalations] = useState<any[]>([]);
   const [repositories, setRepositories] = useState<any[]>([]);
