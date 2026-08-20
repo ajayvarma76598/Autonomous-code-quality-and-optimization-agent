@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Check, X, BarChart3, Activity, ShieldAlert, GitCommit, Trash2, Folder, Clock } from 'lucide-react';
+import { AlertTriangle, Check, X, Activity, Trash2, Folder, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
