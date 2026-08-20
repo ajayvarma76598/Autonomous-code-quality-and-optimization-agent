@@ -1,27 +1,28 @@
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+from typing import Any
 
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from backend.database.models.models import Base
 
-ModelType = TypeVar("ModelType", bound=Base)
-CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
-UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
-class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-    def __init__(self, model: Type[ModelType]):
+class BaseRepository[ModelType: Base, CreateSchemaType: BaseModel, UpdateSchemaType: BaseModel]:
+    def __init__(self, model: type[ModelType]):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
         """
         self.model = model
 
-    def get(self, db: Session, id: Any) -> Optional[ModelType]:
-        return db.query(self.model).filter(self.model.__mapper__.primary_key[0] == id).first()
+    def get(self, db: Session, id: Any) -> ModelType | None:
+        return (
+            db.query(self.model)
+            .filter(self.model.__mapper__.primary_key[0] == id)
+            .first()
+        )
 
     def get_multi(
         self, db: Session, *, skip: int = 0, limit: int = 100
-    ) -> List[ModelType]:
+    ) -> list[ModelType]:
         return db.query(self.model).offset(skip).limit(limit).all()
 
     def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
@@ -37,26 +38,30 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db: Session,
         *,
         db_obj: ModelType,
-        obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+        obj_in: UpdateSchemaType | dict[str, Any],
     ) -> ModelType:
         obj_data = {c.name: getattr(db_obj, c.name) for c in db_obj.__table__.columns}
-        
+
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
             update_data = obj_in.model_dump(exclude_unset=True)
-            
+
         for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
-                
+
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
         return db_obj
 
     def remove(self, db: Session, *, id: Any) -> ModelType:
-        obj = db.query(self.model).filter(self.model.__mapper__.primary_key[0] == id).first()
+        obj = (
+            db.query(self.model)
+            .filter(self.model.__mapper__.primary_key[0] == id)
+            .first()
+        )
         if obj:
             db.delete(obj)
             db.commit()

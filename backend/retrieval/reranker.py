@@ -7,10 +7,12 @@ before returning Top-K evidence to the agent.
 
 Falls back to RRF rank order if LLM is unavailable or quota is exhausted.
 """
+
 from __future__ import annotations
+
 import logging
 import re
-from typing import List, Any
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +30,7 @@ Chunk ({chunk_type}, {language}):
 
 Score (0-10):"""
 
-MAX_CONTENT_CHARS = 800   # keep prompts short for speed
+MAX_CONTENT_CHARS = 800  # keep prompts short for speed
 
 
 class Reranker:
@@ -38,7 +40,7 @@ class Reranker:
     def set_llm(self, llm) -> None:
         self._llm = llm
 
-    def rerank(self, query: str, results: List[Any], top_k: int = 5) -> List[Any]:
+    def rerank(self, query: str, results: list[Any], top_k: int = 5) -> list[Any]:
         """
         Re-rank retrieved results using LLM relevance scoring.
 
@@ -57,7 +59,7 @@ class Reranker:
         if not self._llm:
             return results[:top_k]
 
-        scored: List[tuple[float, Any]] = []
+        scored: list[tuple[float, Any]] = []
         for item in results:
             score = self._score_item(query, item)
             scored.append((score, item))
@@ -76,7 +78,11 @@ class Reranker:
         elif isinstance(item, dict):
             content = str(item.get("content", ""))[:MAX_CONTENT_CHARS]
             chunk_type = item.get("chunk_type", "raw_code")
-            language = item.get("metadata", {}).get("language", "unknown") if isinstance(item.get("metadata"), dict) else "unknown"
+            language = (
+                item.get("metadata", {}).get("language", "unknown")
+                if isinstance(item.get("metadata"), dict)
+                else "unknown"
+            )
             existing_score = float(item.get("score", 0.5))
         else:
             return 0.5
@@ -89,11 +95,13 @@ class Reranker:
                 content=content,
             )
             response = self._llm.invoke(
-                [{"role": "system", "content": _RERANK_SYSTEM},
-                 {"role": "user",   "content": prompt}]
+                [
+                    {"role": "system", "content": _RERANK_SYSTEM},
+                    {"role": "user", "content": prompt},
+                ]
             )
             raw = response.content if hasattr(response, "content") else str(response)
-            m = re.search(r'\b(\d+)\b', raw)
+            m = re.search(r"\b(\d+)\b", raw)
             if m:
                 llm_score = int(m.group(1)) / 10.0
                 # Blend LLM score (70%) with existing RRF score (30%)
@@ -101,7 +109,7 @@ class Reranker:
         except Exception as e:
             logger.debug(f"[Reranker] LLM score failed: {e}")
 
-        return existing_score   # fallback to RRF score
+        return existing_score  # fallback to RRF score
 
 
 reranker = Reranker()

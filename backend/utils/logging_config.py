@@ -1,12 +1,12 @@
+import logging
 import os
 import sys
-import logging
 from logging.handlers import RotatingFileHandler
 
 LOGS_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-    "logs"
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "logs"
 )
+
 
 def setup_logging(log_level: str = None) -> logging.Logger:
     """
@@ -14,7 +14,7 @@ def setup_logging(log_level: str = None) -> logging.Logger:
     Purely adds tracking loggers without modifying business logic.
     """
     os.makedirs(LOGS_DIR, exist_ok=True)
-    
+
     if not log_level:
         log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 
@@ -22,7 +22,7 @@ def setup_logging(log_level: str = None) -> logging.Logger:
 
     log_format = logging.Formatter(
         "[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)d] - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
     root_logger = logging.getLogger()
@@ -41,10 +41,7 @@ def setup_logging(log_level: str = None) -> logging.Logger:
     # 2. File Handler (logs/app.log)
     app_log_file = os.path.join(LOGS_DIR, "app.log")
     file_handler = RotatingFileHandler(
-        app_log_file,
-        maxBytes=10 * 1024 * 1024,
-        backupCount=5,
-        encoding="utf-8"
+        app_log_file, maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"
     )
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(log_format)
@@ -56,5 +53,7 @@ def setup_logging(log_level: str = None) -> logging.Logger:
     logging.getLogger("uvicorn.access").setLevel(logging.INFO)
 
     logger = logging.getLogger("backend.logging")
-    logger.info(f"=== System Tracking Logger Initialized (Level={log_level}, File={app_log_file}) ===")
+    logger.info(
+        f"=== System Tracking Logger Initialized (Level={log_level}, File={app_log_file}) ==="
+    )
     return logger

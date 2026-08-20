@@ -1,6 +1,7 @@
 from langchain_core.tools import tool
-from typing import Dict
+
 from backend.ingestion.git import git_service
+
 
 @tool
 def clone_repository(git_url: str, branch: str = "main") -> str:
@@ -10,8 +11,9 @@ def clone_repository(git_url: str, branch: str = "main") -> str:
     """
     return git_service.clone_repository(git_url, branch)
 
+
 @tool
-def get_repository_info(repo_path: str) -> Dict[str, str]:
+def get_repository_info(repo_path: str) -> dict[str, str]:
     """
     Retrieves the latest commit hash, author, and commit message for a local repository path.
     """

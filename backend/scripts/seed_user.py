@@ -1,10 +1,12 @@
-import sys
 import os
+import sys
 import uuid
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
+from backend.database.models.models import Repository, RepositorySnapshot, Session, User
 from backend.database.session import SessionLocal
-from backend.database.models.models import User, Session, Repository, RepositorySnapshot
+
 
 def seed_test_data():
     db = SessionLocal()
@@ -21,7 +23,7 @@ def seed_test_data():
                 user_id=user_uuid,
                 email="admin@example.com",
                 username="admin",
-                role="admin"
+                role="admin",
             )
             db.add(user)
             db.commit()
@@ -34,7 +36,7 @@ def seed_test_data():
                 user_id=user_uuid,
                 name="test-repo",
                 git_url="https://github.com/example/test-repo",
-                status="ingested"
+                status="ingested",
             )
             db.add(repo)
             db.commit()
@@ -43,9 +45,7 @@ def seed_test_data():
         snap = db.query(RepositorySnapshot).filter_by(snapshot_id=snapshot_uuid).first()
         if not snap:
             snap = RepositorySnapshot(
-                snapshot_id=snapshot_uuid,
-                repository_id=repo_uuid,
-                is_latest=True
+                snapshot_id=snapshot_uuid, repository_id=repo_uuid, is_latest=True
             )
             db.add(snap)
             db.commit()
@@ -57,7 +57,7 @@ def seed_test_data():
                 session_id=session_uuid,
                 user_id=user_uuid,
                 repository_id=repo_uuid,
-                session_name="Test Session"
+                session_name="Test Session",
             )
             db.add(sess)
             db.commit()
@@ -70,6 +70,7 @@ def seed_test_data():
 
     finally:
         db.close()
+
 
 if __name__ == "__main__":
     seed_test_data()

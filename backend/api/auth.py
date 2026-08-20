@@ -1,21 +1,29 @@
-import os
 import logging
-from fastapi import Request, HTTPException, Depends, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import os
+
 import jwt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWKClient
+
 from backend.config import settings
 
 logger = logging.getLogger(__name__)
 
 # Try to get Auth0 config from settings, fallback to env
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", getattr(settings, "AUTH0_DOMAIN", ""))
-API_AUDIENCE = os.getenv("API_AUDIENCE", getattr(settings, "API_AUDIENCE", getattr(settings, "AUTH0_AUDIENCE", "")))
+API_AUDIENCE = os.getenv(
+    "AUTH0_API_AUDIENCE",
+    getattr(settings, "AUTH0_API_AUDIENCE", ""),
+)
 ALGORITHMS = ["RS256"]
 
 token_auth_scheme = HTTPBearer()
 
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(token_auth_scheme)):
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(token_auth_scheme),
+):
     """
     Validates the Auth0 JWT token using PyJWT.
     """
@@ -31,7 +39,7 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(token_a
             algorithms=ALGORITHMS,
             audience=API_AUDIENCE,
             issuer=f"https://{AUTH0_DOMAIN}/",
-            leeway=60
+            leeway=60,
         )
         return payload
     except jwt.ExpiredSignatureError:
@@ -44,15 +52,17 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(token_a
         logger.error(f"Auth0 Validation Error: {e}")
         raise HTTPException(status_code=401, detail="Invalid authentication token")
 
+
 def require_role(allowed_roles: list):
     """
     Dependency to require specific roles.
     Assumes roles are added to the token under a custom namespace or 'permissions' claim.
     """
+
     def role_checker(user: dict = Depends(get_current_user)):
         # Check standard permissions
         permissions = user.get("permissions", [])
-        
+
         # Check custom namespace roles (e.g. from an Auth0 Action)
         roles = user.get("roles", [])
         if not roles:
@@ -60,19 +70,22 @@ def require_role(allowed_roles: list):
         if not roles:
             roles = user.get("https://ai.code.agent/roles", [])
         if not roles:
-            roles = user.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", [])
-            
+            roles = user.get(
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role", []
+            )
+
         user_roles = [r.lower() for r in (permissions + roles)]
-        
+
         # Allow 'admin' to access anything requested by 'admin', 'manager', etc.
         # Actually, user role mapping:
         # User wants "admin is for manager and user is for developer"
         # So "admin" = manager, "user" = developer
-        
+
         if not any(role.lower() in user_roles for role in allowed_roles):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"User does not have required roles. Required one of: {allowed_roles}"
+                detail=f"User does not have required roles. Required one of: {allowed_roles}",
             )
         return user
+
     return role_checker

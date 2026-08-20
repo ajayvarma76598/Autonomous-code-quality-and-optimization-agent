@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
 type Role = 'developer' | 'manager' | null;

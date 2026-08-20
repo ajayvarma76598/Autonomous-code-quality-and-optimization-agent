@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Check, X, BarChart3, Activity, ShieldAlert, Trash2, Folder, Clock } from 'lucide-react';
+import { AlertTriangle, Check, X, BarChart3, Activity, ShieldAlert, GitCommit, Trash2, Folder, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const ManagerDashboard = () => {
-  const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/+$/, '');
-  const WS_URL = API_URL.replace(/^http/, 'ws');
   const [escalations, setEscalations] = useState<any[]>([]);
   const [repositories, setRepositories] = useState<any[]>([]);
   const [snapshots, setSnapshots] = useState<{ [repoId: string]: any[] }>({});
@@ -25,7 +23,7 @@ const ManagerDashboard = () => {
 
   const fetchRepos = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/v1/repositories/`, {
+      const res = await fetch('http://localhost:8000/api/v1/repositories/', {
         headers: await getHeaders()
       });
       if (res.ok) setRepositories(await res.json());
@@ -34,7 +32,7 @@ const ManagerDashboard = () => {
 
   const fetchMetrics = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/v1/metrics`, {
+      const res = await fetch('http://localhost:8000/api/v1/metrics', {
         headers: await getHeaders()
       });
       if (res.ok) {
@@ -50,7 +48,7 @@ const ManagerDashboard = () => {
 
   const fetchPendingEscalations = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/v1/escalation/pending`, {
+      const res = await fetch('http://localhost:8000/api/v1/escalation/pending', {
         headers: await getHeaders()
       });
       if (res.ok) {
@@ -72,7 +70,7 @@ const ManagerDashboard = () => {
     let reconnectTimer: ReturnType<typeof setTimeout>;
 
     const connectWebSocket = () => {
-      ws = new WebSocket(`${WS_URL}/api/v1/escalation/ws`);
+      ws = new WebSocket('ws://localhost:8000/api/v1/escalation/ws');
       
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
@@ -107,7 +105,7 @@ const ManagerDashboard = () => {
     // Optimistic UI update: immediately remove the escalation to load the new state
     setEscalations(prev => prev.filter(e => e.session_id !== sessionId));
     try {
-      await fetch(`${API_URL}/api/v1/escalation/resolve`, {
+      await fetch('http://localhost:8000/api/v1/escalation/resolve', {
         method: 'POST',
         headers: await getHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ session_id: sessionId, action, feedback: 'Resolved by manager.' })
@@ -125,7 +123,7 @@ const ManagerDashboard = () => {
   const handleDeleteRepo = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this repository? This cannot be undone.")) return;
     try {
-      const res = await fetch(`${API_URL}/api/v1/repositories/${id}`, { 
+      const res = await fetch(`http://localhost:8000/api/v1/repositories/${id}`, { 
         method: 'DELETE',
         headers: await getHeaders()
       });
@@ -151,7 +149,7 @@ const ManagerDashboard = () => {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/api/v1/repositories/${id}/snapshots`, {
+      const res = await fetch(`http://localhost:8000/api/v1/repositories/${id}/snapshots`, {
         headers: await getHeaders()
       });
       if (res.ok) {
@@ -169,31 +167,43 @@ const ManagerDashboard = () => {
         <p className="text-gray-500 mt-1">Real-time code quality and agent oversight</p>
       </div>
 
-      {/* Analytics Cards */}
-      {loadingMetrics ? (
-        <div className="flex items-center justify-center h-32">
-          <p className="text-gray-500">Loading metrics...</p>
+      {/* SLO Dashboard Section */}
+      <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mt-2 animate-slide-up">
+        <div className="flex items-center gap-2 mb-6">
+          <Activity className="text-skyblue-500" />
+          <h2 className="text-lg font-bold">Service Level Objectives (SLOs)</h2>
         </div>
-      ) : (
-        <div className="grid grid-cols-4 gap-6">
-          {[
-            { label: 'Task Success Rate', value: metrics?.summary?.task_success_rate !== undefined ? `${metrics.summary.task_success_rate.toFixed(1)}%` : '0%', icon: <Check className="text-skyblue-500" /> },
-            { label: 'LLM Confidence', value: metrics?.summary?.llm_confidence !== undefined ? `${(metrics.summary.llm_confidence * 100).toFixed(1)}%` : '0%', icon: <ShieldAlert className="text-green-500" /> },
-            { label: 'Avg Latency (ms)', value: metrics?.summary?.latency_ms !== undefined ? Math.round(metrics.summary.latency_ms) : '0', icon: <Activity className="text-amber-500" /> },
-            { label: 'Total Queries', value: metrics?.summary?.total_queries !== undefined ? metrics.summary.total_queries : '0', icon: <BarChart3 className="text-purple-500" /> },
-          ].map((stat, i) => (
-            <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-gray-50 rounded-lg">{stat.icon}</div>
+        {loadingMetrics ? (
+          <div className="flex items-center justify-center h-32">
+            <p className="text-gray-500">Loading SLO metrics...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 gap-6">
+            {[
+              { label: 'Task Success Rate', value: metrics?.summary?.task_success_rate !== undefined ? `${metrics.summary.task_success_rate.toFixed(1)}%` : '0%', color: 'bg-green-500', isPercent: true },
+              { label: 'LLM Confidence', value: metrics?.summary?.llm_confidence !== undefined ? `${(metrics.summary.llm_confidence * 100).toFixed(1)}%` : '0%', color: 'bg-emerald-500', isPercent: true },
+              { label: 'Avg Latency (ms)', value: metrics?.summary?.latency_ms !== undefined ? Math.round(metrics.summary.latency_ms) : '0', color: 'bg-amber-500', isPercent: false },
+              { label: 'Total Queries', value: metrics?.summary?.total_queries !== undefined ? metrics.summary.total_queries : '0', color: 'bg-purple-500', isPercent: false },
+              { label: 'Faithfulness', value: metrics?.summary?.faithfulness !== undefined ? `${(metrics.summary.faithfulness * 100).toFixed(1)}%` : '0%', color: 'bg-blue-500', isPercent: true },
+              { label: 'Answer Relevancy', value: metrics?.summary?.answer_relevancy !== undefined ? `${(metrics.summary.answer_relevancy * 100).toFixed(1)}%` : '0%', color: 'bg-indigo-500', isPercent: true },
+              { label: 'Context Precision', value: metrics?.summary?.context_precision !== undefined ? `${(metrics.summary.context_precision * 100).toFixed(1)}%` : '0%', color: 'bg-teal-500', isPercent: true },
+              { label: 'Context Recall', value: metrics?.summary?.recall !== undefined ? `${(metrics.summary.recall * 100).toFixed(1)}%` : '0%', color: 'bg-cyan-500', isPercent: true },
+            ].map((slo, i) => (
+              <div key={i} className="flex flex-col bg-gray-50/50 p-4 rounded-xl border border-gray-100 hover:shadow-sm transition-shadow">
+                <div className="flex justify-between items-end mb-3">
+                  <span className="text-sm font-medium text-gray-500">{slo.label}</span>
+                  <span className="text-2xl font-bold">{slo.value}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 mt-auto">
+                  <div className={`h-1.5 rounded-full ${slo.color}`} style={{ width: slo.isPercent ? slo.value : '100%' }}></div>
+                </div>
               </div>
-              <div className="text-3xl font-bold mb-1">{stat.value}</div>
-              <div className="text-sm font-medium text-gray-500">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6 mt-6">
         {/* Chart */}
         <div className="col-span-1 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <h2 className="text-lg font-bold mb-6">Query Analytics</h2>

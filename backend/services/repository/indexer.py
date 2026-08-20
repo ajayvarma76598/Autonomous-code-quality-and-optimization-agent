@@ -19,20 +19,21 @@ Pipeline Stages:
 All DB writes are fully aligned with the existing schema in models.py.
 No migrations required.
 """
+
 from __future__ import annotations
-import os
-import uuid
+
 import hashlib
 import logging
-from datetime import datetime, timezone
-from typing import List, Optional, Dict
+import os
+import uuid
+from datetime import UTC, datetime
 
-from backend.services.base_service import BaseService
-from backend.retrieval.universal_parser import universal_parser, CodeNode
+from backend.retrieval.bm25 import bm25_retriever
+from backend.retrieval.chunk_builder import BuiltChunk, chunk_builder
 from backend.retrieval.dependency_graph import dependency_graph
 from backend.retrieval.summarizer import code_summarizer
-from backend.retrieval.chunk_builder import chunk_builder, BuiltChunk
-from backend.retrieval.bm25 import bm25_retriever
+from backend.retrieval.universal_parser import CodeNode, universal_parser
+from backend.services.base_service import BaseService
 from backend.services.embedding_service import embedding_service
 
 logger = logging.getLogger(__name__)
@@ -42,33 +43,95 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 EXCLUDE_DIRS = {
-    ".venv", ".git", "node_modules", "__pycache__", "sonar-scanner",
-    ".pytest_cache", ".idea", ".vscode", "dist", "build", "target",
-    "out", ".gradle", ".mvn", "coverage", ".nyc_output", "vendor",
-    ".scannerwork", ".eggs", "bin", "obj",
+    ".venv",
+    ".git",
+    "node_modules",
+    "__pycache__",
+    "sonar-scanner",
+    ".pytest_cache",
+    ".idea",
+    ".vscode",
+    "dist",
+    "build",
+    "target",
+    "out",
+    ".gradle",
+    ".mvn",
+    "coverage",
+    ".nyc_output",
+    "vendor",
+    ".scannerwork",
+    ".eggs",
+    "bin",
+    "obj",
 }
 
 EXCLUDE_FILE_NAMES = {
-    "golden_dataset.md", "capstone_code_quality_and_optimization_dataset.md",
-    ".gitignore", ".gitattributes", ".editorconfig", "package-lock.json",
-    "yarn.lock", "poetry.lock", "pipfile.lock", "gradlew", "gradlew.bat",
-    "mvnw", "mvnw.cmd",
+    "golden_dataset.md",
+    "capstone_code_quality_and_optimization_dataset.md",
+    ".gitignore",
+    ".gitattributes",
+    ".editorconfig",
+    "package-lock.json",
+    "yarn.lock",
+    "poetry.lock",
+    "pipfile.lock",
+    "gradlew",
+    "gradlew.bat",
+    "mvnw",
+    "mvnw.cmd",
 }
 
-EXCLUDE_PATTERNS = ["dataset", ".min.js", ".min.css", ".min.ts", "bundle.js",
-                    "vendor.js", "generated", "proto.pb"]
+EXCLUDE_PATTERNS = [
+    "dataset",
+    ".min.js",
+    ".min.css",
+    ".min.ts",
+    "bundle.js",
+    "vendor.js",
+    "generated",
+    "proto.pb",
+]
 
 INDEXABLE_EXTENSIONS = {
-    ".py", ".java", ".kt", ".js", ".jsx", ".ts", ".tsx",
-    ".go", ".cs", ".cpp", ".c", ".rs", ".rb", ".php", ".scala",
+    ".py",
+    ".java",
+    ".kt",
+    ".js",
+    ".jsx",
+    ".ts",
+    ".tsx",
+    ".go",
+    ".cs",
+    ".cpp",
+    ".c",
+    ".rs",
+    ".rb",
+    ".php",
+    ".scala",
     ".sql",
-    ".md", ".txt", ".rst",
-    ".yaml", ".yml", ".json", ".xml", ".toml", ".properties",
-    ".tf", ".sh", ".gradle",
+    ".md",
+    ".txt",
+    ".rst",
+    ".yaml",
+    ".yml",
+    ".json",
+    ".xml",
+    ".toml",
+    ".properties",
+    ".tf",
+    ".sh",
+    ".gradle",
 }
 
-SPECIAL_FILENAMES = {"dockerfile", "makefile", "jenkinsfile", "procfile",
-                     "vagrantfile", ".env.example"}
+SPECIAL_FILENAMES = {
+    "dockerfile",
+    "makefile",
+    "jenkinsfile",
+    "procfile",
+    "vagrantfile",
+    ".env.example",
+}
 
 
 def _should_index(filename: str) -> bool:
@@ -89,12 +152,12 @@ def _should_index(filename: str) -> bool:
 # Repository Indexer
 # ---------------------------------------------------------------------------
 
+
 class RepositoryIndexer(BaseService):
     def __init__(self):
         super().__init__("RepositoryIndexer")
 
-    def index(self, local_path: str, snapshot_id: Optional[str] = None,
-              llm=None) -> bool:
+    def index(self, local_path: str, snapshot_id: str | None = None, llm=None) -> bool:
         """
         Run the full ingestion pipeline for a repository at `local_path`.
 
@@ -103,22 +166,33 @@ class RepositoryIndexer(BaseService):
             snapshot_id: UUID of the RepositorySnapshot row to link DB records
             llm:         Optional LangChain LLM for summary generation
         """
+
         def _index():
             if not local_path or not os.path.exists(str(local_path)):
-                logger.warning(f"[RepositoryIndexer] Path invalid or does not exist: '{local_path}'")
+                logger.warning(
+                    f"[RepositoryIndexer] Path invalid or does not exist: '{local_path}'"
+                )
                 return True
 
             # Fast DB check: Skip indexing if repository chunks already exist in PostgreSQL for this snapshot
             try:
-                from backend.database.session import SessionLocal
                 from backend.database.models.models import DocumentChunk
+                from backend.database.session import SessionLocal
+
                 db_chk = SessionLocal()
                 try:
                     from uuid import UUID
+
                     snap_uuid = UUID(str(snapshot_id))
-                    existing_chunks = db_chk.query(DocumentChunk).filter(DocumentChunk.snapshot_id == snap_uuid).count()
+                    existing_chunks = (
+                        db_chk.query(DocumentChunk)
+                        .filter(DocumentChunk.snapshot_id == snap_uuid)
+                        .count()
+                    )
                     if existing_chunks > 0:
-                        logger.info(f"[RepositoryIndexer] Repository snapshot already indexed in PostgreSQL ({existing_chunks} chunks present). Skipping indexing.")
+                        logger.info(
+                            f"[RepositoryIndexer] Repository snapshot already indexed in PostgreSQL ({existing_chunks} chunks present). Skipping indexing."
+                        )
                         return True
                 finally:
                     db_chk.close()
@@ -132,16 +206,21 @@ class RepositoryIndexer(BaseService):
             # ----------------------------------------------------------------
             # Stage 1-3: Walk files → Detect language → Parse AST
             # ----------------------------------------------------------------
-            all_nodes: List[CodeNode] = []
-            file_node_map: Dict[str, List[CodeNode]] = {}  # rel_path → nodes
-            file_stats: Dict[str, dict] = {}               # rel_path → {size, lines, lang}
+            all_nodes: list[CodeNode] = []
+            file_node_map: dict[str, list[CodeNode]] = {}  # rel_path → nodes
+            file_stats: dict[str, dict] = {}  # rel_path → {size, lines, lang}
 
-            logger.info(f"[RepositoryIndexer] Stage 1-3: Scanning & parsing '{local_path}'...")
+            logger.info(
+                f"[RepositoryIndexer] Stage 1-3: Scanning & parsing '{local_path}'..."
+            )
             file_count = 0
 
             for root, dirs, files in os.walk(local_path):
-                dirs[:] = [d for d in dirs
-                           if d not in EXCLUDE_DIRS and not d.endswith(".egg-info")]
+                dirs[:] = [
+                    d
+                    for d in dirs
+                    if d not in EXCLUDE_DIRS and not d.endswith(".egg-info")
+                ]
 
                 for filename in files:
                     if not _should_index(filename):
@@ -150,7 +229,7 @@ class RepositoryIndexer(BaseService):
                     rel_path = os.path.relpath(fp, local_path).replace("\\", "/")
 
                     try:
-                        with open(fp, "r", encoding="utf-8", errors="ignore") as fh:
+                        with open(fp, encoding="utf-8", errors="ignore") as fh:
                             content = fh.read()
                         if not content.strip():
                             continue
@@ -172,7 +251,9 @@ class RepositoryIndexer(BaseService):
                             "filename": filename,
                         }
                     except Exception as e:
-                        logger.warning(f"[RepositoryIndexer] Parse error '{rel_path}': {e}")
+                        logger.warning(
+                            f"[RepositoryIndexer] Parse error '{rel_path}': {e}"
+                        )
 
             logger.info(
                 f"[RepositoryIndexer] Stage 1-3 complete. "
@@ -189,49 +270,62 @@ class RepositoryIndexer(BaseService):
             # ----------------------------------------------------------------
             # Stage 5: Batch LLM Summaries
             # ----------------------------------------------------------------
-            logger.info(f"[RepositoryIndexer] Stage 5: Generating LLM summaries for {len(all_nodes)} nodes...")
-            summaries: List[str] = []
+            logger.info(
+                f"[RepositoryIndexer] Stage 5: Generating LLM summaries for {len(all_nodes)} nodes..."
+            )
+            summaries: list[str] = []
             if llm:
                 summaries = code_summarizer.batch_summarize(all_nodes)
                 logger.info("[RepositoryIndexer] Stage 5: Summaries generated.")
             else:
-                logger.info("[RepositoryIndexer] Stage 5: No LLM — using structured fallbacks.")
+                logger.info(
+                    "[RepositoryIndexer] Stage 5: No LLM — using structured fallbacks."
+                )
 
             # ----------------------------------------------------------------
             # Stage 6: Build Parent-Child Chunks (3 views)
             # ----------------------------------------------------------------
             logger.info("[RepositoryIndexer] Stage 6: Building chunk views...")
-            built_chunks: List[BuiltChunk] = chunk_builder.build(
+            built_chunks: list[BuiltChunk] = chunk_builder.build(
                 all_nodes,
                 summaries=summaries if summaries else None,
             )
-            logger.info(f"[RepositoryIndexer] Stage 6: {len(built_chunks)} chunks built.")
+            logger.info(
+                f"[RepositoryIndexer] Stage 6: {len(built_chunks)} chunks built."
+            )
 
             # ----------------------------------------------------------------
             # Stages 7-11: DB Writes
             # ----------------------------------------------------------------
             from backend.database.session import SessionLocal
+
             db = SessionLocal()
             try:
                 snap_uuid = _parse_uuid(snapshot_id)
 
                 # Stage 7: RepositoryFile rows
-                file_id_map: Dict[str, uuid.UUID] = {}
+                file_id_map: dict[str, uuid.UUID] = {}
                 if snap_uuid:
-                    logger.info("[RepositoryIndexer] Stage 7: Writing RepositoryFile rows...")
+                    logger.info(
+                        "[RepositoryIndexer] Stage 7: Writing RepositoryFile rows..."
+                    )
                     file_id_map = _upsert_repository_files(db, snap_uuid, file_stats)
                     db.commit()
 
                 # Stage 8: CodeObject rows (class/function hierarchy)
-                object_id_map: Dict[str, uuid.UUID] = {}  # "rel_path::name" → object_id
+                object_id_map: dict[str, uuid.UUID] = {}  # "rel_path::name" → object_id
                 if snap_uuid:
-                    logger.info("[RepositoryIndexer] Stage 8: Writing CodeObject rows...")
+                    logger.info(
+                        "[RepositoryIndexer] Stage 8: Writing CodeObject rows..."
+                    )
                     object_id_map = _upsert_code_objects(db, all_nodes, file_id_map)
                     db.commit()
 
                 # Stage 9: DependencyRelationship rows
                 if snap_uuid:
-                    logger.info("[RepositoryIndexer] Stage 9: Writing DependencyRelationship rows...")
+                    logger.info(
+                        "[RepositoryIndexer] Stage 9: Writing DependencyRelationship rows..."
+                    )
                     _write_dependency_edges(db, snap_uuid, object_id_map)
                     db.commit()
 
@@ -239,10 +333,14 @@ class RepositoryIndexer(BaseService):
                 logger.info("[RepositoryIndexer] Stage 10: Generating embeddings...")
                 texts = [c.content for c in built_chunks]
                 vectors = _batch_embed(texts)
-                logger.info(f"[RepositoryIndexer] Stage 10: {len(vectors)} vectors generated.")
+                logger.info(
+                    f"[RepositoryIndexer] Stage 10: {len(vectors)} vectors generated."
+                )
 
                 # Stage 11: DocumentChunk + Embedding rows
-                logger.info("[RepositoryIndexer] Stage 11: Storing chunks + embeddings in DB...")
+                logger.info(
+                    "[RepositoryIndexer] Stage 11: Storing chunks + embeddings in DB..."
+                )
                 bm25_docs = _write_chunks_and_embeddings(
                     db, built_chunks, vectors, file_id_map, object_id_map
                 )
@@ -261,7 +359,9 @@ class RepositoryIndexer(BaseService):
             # Stage 12: Fit BM25
             # ----------------------------------------------------------------
             if bm25_docs:
-                logger.info(f"[RepositoryIndexer] Stage 12: Fitting BM25 on {len(bm25_docs)} docs...")
+                logger.info(
+                    f"[RepositoryIndexer] Stage 12: Fitting BM25 on {len(bm25_docs)} docs..."
+                )
                 bm25_retriever.fit(bm25_docs)
                 logger.info("[RepositoryIndexer] Stage 12: BM25 fit complete.")
 
@@ -279,7 +379,8 @@ class RepositoryIndexer(BaseService):
 # DB Helper Functions
 # ---------------------------------------------------------------------------
 
-def _parse_uuid(value) -> Optional[uuid.UUID]:
+
+def _parse_uuid(value) -> uuid.UUID | None:
     if not value:
         return None
     try:
@@ -288,17 +389,23 @@ def _parse_uuid(value) -> Optional[uuid.UUID]:
         return None
 
 
-def _upsert_repository_files(db, snap_uuid: uuid.UUID,
-                              file_stats: Dict[str, dict]) -> Dict[str, uuid.UUID]:
+def _upsert_repository_files(
+    db, snap_uuid: uuid.UUID, file_stats: dict[str, dict]
+) -> dict[str, uuid.UUID]:
     """Insert RepositoryFile rows; return rel_path → file_id map."""
     from backend.database.models.models import RepositoryFile
-    file_id_map: Dict[str, uuid.UUID] = {}
+
+    file_id_map: dict[str, uuid.UUID] = {}
 
     for rel_path, stats in file_stats.items():
-        existing = db.query(RepositoryFile).filter(
-            RepositoryFile.snapshot_id == snap_uuid,
-            RepositoryFile.path == rel_path,
-        ).first()
+        existing = (
+            db.query(RepositoryFile)
+            .filter(
+                RepositoryFile.snapshot_id == snap_uuid,
+                RepositoryFile.path == rel_path,
+            )
+            .first()
+        )
         if existing:
             file_id_map[rel_path] = existing.file_id
             continue
@@ -321,15 +428,17 @@ def _upsert_repository_files(db, snap_uuid: uuid.UUID,
     return file_id_map
 
 
-def _upsert_code_objects(db, nodes: List[CodeNode],
-                          file_id_map: Dict[str, uuid.UUID]) -> Dict[str, uuid.UUID]:
+def _upsert_code_objects(
+    db, nodes: list[CodeNode], file_id_map: dict[str, uuid.UUID]
+) -> dict[str, uuid.UUID]:
     """Insert CodeObject rows with parent-child links; return key → object_id map."""
     from backend.database.models.models import CodeObject
-    object_id_map: Dict[str, uuid.UUID] = {}
+
+    object_id_map: dict[str, uuid.UUID] = {}
 
     # Two passes: first classes (parents), then methods (children)
     class_nodes = [n for n in nodes if n.node_type == "class"]
-    other_nodes  = [n for n in nodes if n.node_type != "class"]
+    other_nodes = [n for n in nodes if n.node_type != "class"]
 
     def _insert(node: CodeNode):
         key = f"{node.file_path}::{node.name}"
@@ -355,13 +464,13 @@ def _upsert_code_objects(db, nodes: List[CodeNode],
             end_line=node.end_line,
             docstring=node.docstring or "",
             metadata_={
-                "language":    node.language,
-                "package":     node.package,
-                "framework":   node.framework,
+                "language": node.language,
+                "package": node.package,
+                "framework": node.framework,
                 "annotations": node.annotations,
-                "extends":     node.extends,
-                "implements":  node.implements,
-                "calls":       node.calls[:10],
+                "extends": node.extends,
+                "implements": node.implements,
+                "calls": node.calls[:10],
                 "content_type": node.content_type,
             },
         )
@@ -376,56 +485,71 @@ def _upsert_code_objects(db, nodes: List[CodeNode],
     return object_id_map
 
 
-def _write_dependency_edges(db, snap_uuid: uuid.UUID,
-                             object_id_map: Dict[str, uuid.UUID]) -> None:
+def _write_dependency_edges(
+    db, snap_uuid: uuid.UUID, object_id_map: dict[str, uuid.UUID]
+) -> None:
     """Write DependencyRelationship rows from the in-memory graph."""
     from backend.database.models.models import DependencyRelationship
+
     edges = dependency_graph.get_all_edges()
 
     for edge in edges:
         src_id = object_id_map.get(edge.source) or object_id_map.get(
-            f"{edge.source_file}::{edge.source}")
+            f"{edge.source_file}::{edge.source}"
+        )
         tgt_id = object_id_map.get(edge.target) or object_id_map.get(
-            f"{edge.target_file}::{edge.target}")
+            f"{edge.target_file}::{edge.target}"
+        )
 
         if not src_id or not tgt_id:
             continue
 
-        db.add(DependencyRelationship(
-            relationship_id=uuid.uuid4(),
-            snapshot_id=snap_uuid,
-            source_object_id=src_id,
-            target_object_id=tgt_id,
-            relationship_type=edge.edge_type,
-            metadata_={"source_file": edge.source_file, "target_file": edge.target_file},
-        ))
+        db.add(
+            DependencyRelationship(
+                relationship_id=uuid.uuid4(),
+                snapshot_id=snap_uuid,
+                source_object_id=src_id,
+                target_object_id=tgt_id,
+                relationship_type=edge.edge_type,
+                metadata_={
+                    "source_file": edge.source_file,
+                    "target_file": edge.target_file,
+                },
+            )
+        )
 
 
-def _batch_embed(texts: List[str], batch_size: int = 50) -> List[List[float]]:
+def _batch_embed(texts: list[str], batch_size: int = 50) -> list[list[float]]:
     """Embed all texts in batches; returns parallel list of vectors."""
-    all_vectors: List[List[float]] = []
+    all_vectors: list[list[float]] = []
     for i in range(0, len(texts), batch_size):
-        batch = texts[i: i + batch_size]
+        batch = texts[i : i + batch_size]
         try:
             vecs = embedding_service.generate_embeddings(batch)
             all_vectors.extend(vecs)
         except Exception as e:
-            logger.warning(f"[RepositoryIndexer] Embedding batch {i}-{i+batch_size} failed: {e}")
+            logger.warning(
+                f"[RepositoryIndexer] Embedding batch {i}-{i + batch_size} failed: {e}"
+            )
             all_vectors.extend([[0.0] * 1536] * len(batch))
     return all_vectors
 
 
-def _write_chunks_and_embeddings(db, built_chunks: List[BuiltChunk],
-                                   vectors: List[List[float]],
-                                   file_id_map: Dict[str, uuid.UUID],
-                                   object_id_map: Dict[str, uuid.UUID]) -> List[dict]:
+def _write_chunks_and_embeddings(
+    db,
+    built_chunks: list[BuiltChunk],
+    vectors: list[list[float]],
+    file_id_map: dict[str, uuid.UUID],
+    object_id_map: dict[str, uuid.UUID],
+) -> list[dict]:
     """Write DocumentChunk + Embedding rows; also build BM25 docs list."""
     from backend.database.models.models import DocumentChunk, Embedding
-    bm25_docs: List[dict] = []
+
+    bm25_docs: list[dict] = []
 
     for idx, (chunk, vector) in enumerate(zip(built_chunks, vectors)):
-        file_id   = file_id_map.get(chunk.node.file_path)
-        obj_key   = f"{chunk.node.file_path}::{chunk.node.name}"
+        file_id = file_id_map.get(chunk.node.file_path)
+        obj_key = f"{chunk.node.file_path}::{chunk.node.name}"
         object_id = object_id_map.get(obj_key)
 
         chunk_id = uuid.uuid4()
@@ -449,30 +573,33 @@ def _write_chunks_and_embeddings(db, built_chunks: List[BuiltChunk],
             model_name="text-embedding-3-small",
             embedding_dimension=len(vector),
             embedding=vector,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         db.add(emb)
 
         # Only raw_code chunks go into BM25
         if chunk.chunk_type == "raw_code":
-            bm25_docs.append({
-                "chunk_id": str(chunk_id),
-                "content": chunk.content,
-                "repository_path": chunk.node.file_path,
-                "metadata": chunk.metadata,
-            })
+            bm25_docs.append(
+                {
+                    "chunk_id": str(chunk_id),
+                    "content": chunk.content,
+                    "repository_path": chunk.node.file_path,
+                    "metadata": chunk.metadata,
+                }
+            )
 
     return bm25_docs
 
 
-def _build_bm25_docs_fallback(built_chunks: List[BuiltChunk]) -> List[dict]:
+def _build_bm25_docs_fallback(built_chunks: list[BuiltChunk]) -> list[dict]:
     """Build BM25 docs without DB (fallback when DB write fails)."""
     return [
         {
             "chunk_id": chunk.chunk_id_hint,
-            "content":  chunk.content,
+            "content": chunk.content,
             "repository_path": chunk.node.file_path,
             "metadata": chunk.metadata,
         }
-        for chunk in built_chunks if chunk.chunk_type == "raw_code"
+        for chunk in built_chunks
+        if chunk.chunk_type == "raw_code"
     ]

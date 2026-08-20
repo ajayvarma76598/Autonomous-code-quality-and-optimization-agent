@@ -1,11 +1,9 @@
-import os
-import asyncio
 from dotenv import load_dotenv
 
 load_dotenv()
 
-from backend.services.observability.langfuse import langfuse_service
-from backend.prompts.registry import FALLBACK_PROMPTS
+from backend.prompts.registry import FALLBACK_PROMPTS  # noqa: E402
+from backend.services.observability.langfuse import langfuse_service  # noqa: E402
 
 # The manager prompt is dynamically generated in the code, but we can register it here to keep it centralized in Langfuse
 MANAGER_PROMPT = """You are an expert routing agent. Your job is to classify the user's query and route it to the appropriate specialized agent.
@@ -20,6 +18,7 @@ Available agents:
 - repository: For general questions about the codebase, finding files, or if you are unsure.
 
 Route the following query accurately."""
+
 
 def push_prompts():
     if not langfuse_service.langfuse:
@@ -38,26 +37,29 @@ def push_prompts():
                 name=prompt_name,
                 prompt=prompt_content,
                 type="text",
-                labels=["production"]
+                labels=["production"],
             )
             print(f"✅ Successfully pushed {prompt_name}")
         except Exception as e:
             print(f"❌ Failed to push {prompt_name}: {e}")
 
     # Push the Manager Routing Prompt
-    print(f"Pushing manager_routing_prompt...")
+    print("Pushing manager_routing_prompt...")
     try:
         langfuse.create_prompt(
             name="manager_routing_prompt",
             prompt=MANAGER_PROMPT,
             type="text",
-            labels=["production"]
+            labels=["production"],
         )
-        print(f"✅ Successfully pushed manager_routing_prompt")
+        print("✅ Successfully pushed manager_routing_prompt")
     except Exception as e:
         print(f"❌ Failed to push manager_routing_prompt: {e}")
 
-    print("\nAll prompts pushed! They are now centrally managed in your Langfuse Dashboard.")
+    print(
+        "\nAll prompts pushed! They are now centrally managed in your Langfuse Dashboard."
+    )
+
 
 if __name__ == "__main__":
     push_prompts()

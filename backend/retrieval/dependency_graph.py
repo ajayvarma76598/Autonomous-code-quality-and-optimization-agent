@@ -14,11 +14,12 @@ Edge Types (aligned with DB DependencyRelationship.relationship_type):
   ANNOTATED_WITH — class/method carries a specific annotation
   USES          — generic "uses" relationship
 """
+
 from __future__ import annotations
+
 import logging
-from dataclasses import dataclass, field
 from collections import defaultdict
-from typing import List, Dict, Set, Optional
+from dataclasses import dataclass, field
 
 from backend.retrieval.universal_parser import CodeNode
 
@@ -29,14 +30,17 @@ logger = logging.getLogger(__name__)
 # Data Structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class DependencyEdge:
-    source: str          # fully-qualified name or "file::ClassName"
-    target: str          # fully-qualified name or plain class name
-    edge_type: str       # IMPORTS | EXTENDS | IMPLEMENTS | CALLS | INJECTS | ANNOTATED_WITH | USES
+    source: str  # fully-qualified name or "file::ClassName"
+    target: str  # fully-qualified name or plain class name
+    edge_type: (
+        str  # IMPORTS | EXTENDS | IMPLEMENTS | CALLS | INJECTS | ANNOTATED_WITH | USES
+    )
     source_file: str = ""
     target_file: str = ""
-    metadata: Dict = field(default_factory=dict)
+    metadata: dict = field(default_factory=dict)
 
 
 class DependencyGraph:
@@ -45,15 +49,15 @@ class DependencyGraph:
     """
 
     def __init__(self):
-        self._edges: Dict[str, List[DependencyEdge]] = defaultdict(list)
-        self._reverse: Dict[str, List[DependencyEdge]] = defaultdict(list)
-        self._node_to_file: Dict[str, str] = {}   # symbol name → file path
+        self._edges: dict[str, list[DependencyEdge]] = defaultdict(list)
+        self._reverse: dict[str, list[DependencyEdge]] = defaultdict(list)
+        self._node_to_file: dict[str, str] = {}  # symbol name → file path
 
     # ------------------------------------------------------------------
     # Build
     # ------------------------------------------------------------------
 
-    def build_from_nodes(self, nodes: List[CodeNode]) -> None:
+    def build_from_nodes(self, nodes: list[CodeNode]) -> None:
         """
         Populate the graph from a list of parsed CodeNodes.
         Clears existing data first.
@@ -94,8 +98,7 @@ class DependencyGraph:
         # CALLS (heuristic — filter to known symbols)
         for callee in node.calls:
             if callee in self._node_to_file:
-                self._add(src, callee, "CALLS", src_file,
-                          self._node_to_file[callee])
+                self._add(src, callee, "CALLS", src_file, self._node_to_file[callee])
 
         # IMPORTS (from the file-level import block, rough parse)
         if node.imports:
@@ -110,16 +113,24 @@ class DependencyGraph:
         if "@Autowired" in node.code or "constructor(" in node.code.lower():
             for dep in _extract_injected(node.code):
                 if dep in self._node_to_file:
-                    self._add(src, dep, "INJECTS", src_file,
-                              self._node_to_file[dep])
+                    self._add(src, dep, "INJECTS", src_file, self._node_to_file[dep])
 
-    def _add(self, source: str, target: str, edge_type: str,
-             source_file: str = "", target_file: str = "") -> None:
+    def _add(
+        self,
+        source: str,
+        target: str,
+        edge_type: str,
+        source_file: str = "",
+        target_file: str = "",
+    ) -> None:
         if not target or target == source:
             return
         edge = DependencyEdge(
-            source=source, target=target, edge_type=edge_type,
-            source_file=source_file, target_file=target_file or self._node_to_file.get(target, ""),
+            source=source,
+            target=target,
+            edge_type=edge_type,
+            source_file=source_file,
+            target_file=target_file or self._node_to_file.get(target, ""),
         )
         self._edges[source].append(edge)
         self._reverse[target].append(edge)
@@ -128,23 +139,28 @@ class DependencyGraph:
     # Query
     # ------------------------------------------------------------------
 
-    def get_outgoing(self, symbol: str,
-                     edge_types: Optional[List[str]] = None) -> List[DependencyEdge]:
+    def get_outgoing(
+        self, symbol: str, edge_types: list[str] | None = None
+    ) -> list[DependencyEdge]:
         edges = self._edges.get(symbol, [])
         if edge_types:
             edges = [e for e in edges if e.edge_type in edge_types]
         return edges
 
-    def get_incoming(self, symbol: str,
-                     edge_types: Optional[List[str]] = None) -> List[DependencyEdge]:
+    def get_incoming(
+        self, symbol: str, edge_types: list[str] | None = None
+    ) -> list[DependencyEdge]:
         edges = self._reverse.get(symbol, [])
         if edge_types:
             edges = [e for e in edges if e.edge_type in edge_types]
         return edges
 
-    def expand_context(self, symbol_names: List[str],
-                       depth: int = 1,
-                       edge_types: Optional[List[str]] = None) -> List[str]:
+    def expand_context(
+        self,
+        symbol_names: list[str],
+        depth: int = 1,
+        edge_types: list[str] | None = None,
+    ) -> list[str]:
         """
         Given a list of retrieved symbol names, walk the graph to collect
         additional context symbols (parent class, called services, etc.).
@@ -153,11 +169,11 @@ class DependencyGraph:
         if edge_types is None:
             edge_types = ["EXTENDS", "IMPLEMENTS", "CALLS", "INJECTS", "IMPORTS"]
 
-        visited: Set[str] = set(symbol_names)
-        frontier: Set[str] = set(symbol_names)
+        visited: set[str] = set(symbol_names)
+        frontier: set[str] = set(symbol_names)
 
         for _ in range(depth):
-            next_frontier: Set[str] = set()
+            next_frontier: set[str] = set()
             for sym in frontier:
                 for edge in self.get_outgoing(sym, edge_types):
                     if edge.target not in visited:
@@ -173,13 +189,13 @@ class DependencyGraph:
 
         return [s for s in visited if s not in symbol_names]
 
-    def get_all_edges(self) -> List[DependencyEdge]:
-        edges: List[DependencyEdge] = []
+    def get_all_edges(self) -> list[DependencyEdge]:
+        edges: list[DependencyEdge] = []
         for edge_list in self._edges.values():
             edges.extend(edge_list)
         return edges
 
-    def symbol_to_file(self, symbol: str) -> Optional[str]:
+    def symbol_to_file(self, symbol: str) -> str | None:
         return self._node_to_file.get(symbol)
 
     @staticmethod
@@ -199,37 +215,38 @@ class DependencyGraph:
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _parse_import_targets(imports_block: str, language: str) -> List[str]:
+
+def _parse_import_targets(imports_block: str, language: str) -> list[str]:
     """Extract imported class/module names from a raw import block."""
-    targets: List[str] = []
+    targets: list[str] = []
     for line in imports_block.splitlines():
         line = line.strip()
         if not line:
             continue
         # Java/Kotlin: import com.package.ClassName;
-        m = re.search(r'import\s+[\w.]+\.(\w+)', line)
+        m = re.search(r"import\s+[\w.]+\.(\w+)", line)
         if m:
             targets.append(m.group(1))
             continue
         # Python: from module import Name  /  import name
-        m = re.search(r'from\s+[\w.]+\s+import\s+(.+)', line)
+        m = re.search(r"from\s+[\w.]+\s+import\s+(.+)", line)
         if m:
             for sym in m.group(1).split(","):
                 targets.append(sym.strip().split(" as ")[0].strip())
             continue
-        m = re.search(r'^import\s+([\w.]+)', line)
+        m = re.search(r"^import\s+([\w.]+)", line)
         if m:
             targets.append(m.group(1).split(".")[-1])
     return [t for t in targets if t and len(t) > 1]
 
 
-def _extract_injected(code: str) -> List[str]:
+def _extract_injected(code: str) -> list[str]:
     """Heuristic: find @Autowired fields or constructor param types."""
-    injected: List[str] = []
+    injected: list[str] = []
     for line in code.splitlines():
         stripped = line.strip()
         if "@Autowired" in stripped or "private" in stripped:
-            m = re.search(r'(?:private|protected|public)\s+(\w+)\s+\w+\s*;', stripped)
+            m = re.search(r"(?:private|protected|public)\s+(\w+)\s+\w+\s*;", stripped)
             if m:
                 injected.append(m.group(1))
     return injected

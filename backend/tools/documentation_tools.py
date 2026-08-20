@@ -1,5 +1,6 @@
 from langchain_core.tools import tool
 
+
 @tool
 def generate_readme(repo_summary: str, architecture_summary: str) -> str:
     """

@@ -1,12 +1,21 @@
 import random
 import uuid
-from datetime import datetime, timedelta, timezone
-from backend.database.session import SessionLocal, init_db
+from datetime import UTC, datetime, timedelta
+
 from backend.database.models.models import (
-    User, Repository, RepositorySnapshot, RepositoryFile,
-    CodeObject, CodeQualityMetric, PerformanceLog, WorkflowRun,
-    EvaluationRun, EvaluationResult, Session as DbSession
+    CodeObject,
+    CodeQualityMetric,
+    EvaluationResult,
+    EvaluationRun,
+    PerformanceLog,
+    Repository,
+    RepositoryFile,
+    RepositorySnapshot,
+    User,
+    WorkflowRun,
 )
+from backend.database.models.models import Session as DbSession
+from backend.database.session import SessionLocal, init_db
 
 # -----------------------------
 # CONFIGURATION
@@ -23,28 +32,52 @@ NUM_WORKFLOWS = 30
 # -----------------------------
 
 repo_names = [
-    "payment-service", "user-auth-service", "analytics-engine",
-    "inventory-service", "notification-service", "recommendation-engine",
-    "reporting-dashboard", "order-management", "search-service", "fraud-detection-engine"
+    "payment-service",
+    "user-auth-service",
+    "analytics-engine",
+    "inventory-service",
+    "notification-service",
+    "recommendation-engine",
+    "reporting-dashboard",
+    "order-management",
+    "search-service",
+    "fraud-detection-engine",
 ]
 
 languages = ["Java", "Python", "JavaScript", "Go", "TypeScript"]
 architectures = ["Microservices", "Monolith", "Serverless", "Event-Driven"]
-teams = ["Platform Team", "Backend Team", "Data Engineering", "Security Team", "Frontend Team", "Infrastructure Team"]
+teams = [
+    "Platform Team",
+    "Backend Team",
+    "Data Engineering",
+    "Security Team",
+    "Frontend Team",
+    "Infrastructure Team",
+]
 repo_status = ["Active", "Maintenance", "Deprecated"]
 
-modules = ["authentication", "payment-core", "data-pipeline", "api-controller", "reporting-engine", "user-management", "order-processing"]
+modules = [
+    "authentication",
+    "payment-core",
+    "data-pipeline",
+    "api-controller",
+    "reporting-engine",
+    "user-management",
+    "order-processing",
+]
 file_types = ["Service", "Controller", "Manager", "Repository", "Processor", "Handler"]
 
+
 def random_date():
-    start = datetime(2024, 1, 1, tzinfo=timezone.utc)
-    end = datetime(2025, 3, 1, tzinfo=timezone.utc)
+    start = datetime(2024, 1, 1, tzinfo=UTC)
+    end = datetime(2025, 3, 1, tzinfo=UTC)
     delta = end - start
     return start + timedelta(seconds=random.randint(0, int(delta.total_seconds())))
 
+
 def seed_data():
     db = SessionLocal()
-    
+
     try:
         print("Initializing Database tables if not exist...")
         init_db()
@@ -60,7 +93,7 @@ def seed_data():
                 email=f"user{i}@example.com",
                 username=f"dev_user_{i}",
                 role="developer",
-                created_at=random_date()
+                created_at=random_date(),
             )
             db.add(user)
             users.append(user)
@@ -80,13 +113,13 @@ def seed_data():
                 default_branch="main",
                 default_language=random.choice(languages),
                 status=random.choice(repo_status),
-                created_at=random_date()
+                created_at=random_date(),
             )
             db.add(repo)
             repositories.append(repo)
-            
+
         db.commit()
-        
+
         for repo in repositories:
             snapshot = RepositorySnapshot(
                 repository_id=repo.repository_id,
@@ -95,7 +128,7 @@ def seed_data():
                 commit_message="Initial import",
                 author="System",
                 indexed_at=random_date(),
-                is_latest=True
+                is_latest=True,
             )
             db.add(snapshot)
             snapshots.append(snapshot)
@@ -108,7 +141,7 @@ def seed_data():
                 module = random.choice(modules)
                 ext = snapshot.repository.default_language.lower()[:2]
                 file_name = f"{module}_{random.choice(file_types)}.{ext}"
-                
+
                 repo_file = RepositoryFile(
                     snapshot_id=snapshot.snapshot_id,
                     path=f"src/{module}/{file_name}",
@@ -117,7 +150,7 @@ def seed_data():
                     language=snapshot.repository.default_language,
                     size_bytes=random.randint(1000, 50000),
                     line_count=random.randint(50, 800),
-                    checksum=uuid.uuid4().hex
+                    checksum=uuid.uuid4().hex,
                 )
                 db.add(repo_file)
                 db.flush()
@@ -131,7 +164,7 @@ def seed_data():
                     code_smell_count=random.randint(0, 10),
                     security_vulnerability_count=random.randint(0, 3),
                     test_coverage_percentage=round(random.uniform(50.0, 99.0), 2),
-                    last_analysis_date=random_date()
+                    last_analysis_date=random_date(),
                 )
                 db.add(metric)
         db.commit()
@@ -147,7 +180,7 @@ def seed_data():
                     return_type="void",
                     start_line=random.randint(1, 50),
                     end_line=random.randint(51, 200),
-                    cyclomatic_complexity=random.randint(1, 20)
+                    cyclomatic_complexity=random.randint(1, 20),
                 )
                 db.add(obj)
         db.commit()
@@ -161,7 +194,7 @@ def seed_data():
                 peak_response_time_ms=round(random.uniform(600.0, 2000.0), 2),
                 error_rate_percentage=round(random.uniform(0.1, 2.5), 2),
                 throughput_requests_per_second=random.randint(50, 1000),
-                recorded_at=random_date()
+                recorded_at=random_date(),
             )
             db.add(log)
         db.commit()
@@ -170,13 +203,13 @@ def seed_data():
         for _ in range(NUM_WORKFLOWS):
             snapshot = random.choice(snapshots)
             user = snapshot.repository.user
-            
+
             session = DbSession(
                 user_id=user.user_id,
                 repository_id=snapshot.repository.repository_id,
                 session_name=f"Benchmarking Session-{uuid.uuid4().hex[:6]}",
                 status="ACTIVE",
-                created_at=random_date()
+                created_at=random_date(),
             )
             db.add(session)
             db.flush()
@@ -184,15 +217,17 @@ def seed_data():
             start_t = random_date()
             duration_ms = random.randint(100, 2000)
             end_t = start_t + timedelta(milliseconds=duration_ms)
-            
+
             run = WorkflowRun(
                 session_id=session.session_id,
                 snapshot_id=snapshot.snapshot_id,
-                workflow_type=random.choice(["code_review", "optimization", "documentation"]),
+                workflow_type=random.choice(
+                    ["code_review", "optimization", "documentation"]
+                ),
                 status=random.choice(["COMPLETED", "FAILED"]),
                 started_at=start_t,
                 completed_at=end_t,
-                latency_ms=duration_ms
+                latency_ms=duration_ms,
             )
             db.add(run)
             db.flush()
@@ -204,7 +239,7 @@ def seed_data():
                 model_version="gpt-4o",
                 embedding_version="text-embedding-3-small",
                 started_at=start_t,
-                completed_at=end_t
+                completed_at=end_t,
             )
             db.add(eval_run)
             db.flush()
@@ -219,7 +254,7 @@ def seed_data():
                 llm_confidence=round(random.uniform(0.85, 0.99), 2),
                 task_success_rate=round(random.uniform(0.8, 1.0), 2),
                 groundedness=round(random.uniform(0.85, 1.0), 2),
-                passed=True
+                passed=True,
             )
             db.add(eval_result)
 
@@ -231,6 +266,7 @@ def seed_data():
         db.rollback()
     finally:
         db.close()
+
 
 if __name__ == "__main__":
     seed_data()

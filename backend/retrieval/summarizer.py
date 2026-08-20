@@ -11,9 +11,10 @@ Strategy:
   - Structured fallback if LLM is unavailable or quota exhausted
   - Summaries are stored as separate DocumentChunk rows (chunk_type="summary")
 """
+
 from __future__ import annotations
+
 import logging
-from typing import List, Optional, Tuple
 
 from backend.retrieval.universal_parser import CodeNode
 
@@ -21,8 +22,8 @@ logger = logging.getLogger(__name__)
 
 # Only summarise meaningful code nodes, not raw sliding-window chunks
 SUMMARISE_TYPES = {"class", "function", "section"}
-BATCH_SIZE = 15          # nodes per LLM call
-MAX_CODE_CHARS = 1800    # truncate code before sending to LLM
+BATCH_SIZE = 15  # nodes per LLM call
+MAX_CODE_CHARS = 1800  # truncate code before sending to LLM
 
 
 # ---------------------------------------------------------------------------
@@ -56,6 +57,7 @@ Code:
 # Fallback (Structured Header Summary)
 # ---------------------------------------------------------------------------
 
+
 def _fallback_summary(node: CodeNode) -> str:
     parts = [f"{node.node_type.capitalize()} '{node.name}'"]
     if node.parent_name:
@@ -78,6 +80,7 @@ def _fallback_summary(node: CodeNode) -> str:
 # Single-item fallback text builder
 # ---------------------------------------------------------------------------
 
+
 def _item_text(node: CodeNode, idx: int) -> str:
     return _SINGLE_ITEM_TEMPLATE.format(
         idx=idx + 1,
@@ -87,7 +90,9 @@ def _item_text(node: CodeNode, idx: int) -> str:
         parent=f"\nParent Class: {node.parent_name}" if node.parent_name else "",
         package=f"\nPackage: {node.package}" if node.package else "",
         framework=f"\nFramework: {node.framework}" if node.framework else "",
-        annotations=f"\nAnnotations: {', '.join(node.annotations)}" if node.annotations else "",
+        annotations=f"\nAnnotations: {', '.join(node.annotations)}"
+        if node.annotations
+        else "",
         code=node.code[:MAX_CODE_CHARS],
     )
 
@@ -95,6 +100,7 @@ def _item_text(node: CodeNode, idx: int) -> str:
 # ---------------------------------------------------------------------------
 # Core Summarizer
 # ---------------------------------------------------------------------------
+
 
 class CodeSummarizer:
     def __init__(self, llm=None):
@@ -122,15 +128,15 @@ class CodeSummarizer:
             logger.warning(f"[Summarizer] LLM call failed for '{node.name}': {e}")
             return _fallback_summary(node)
 
-    def batch_summarize(self, nodes: List[CodeNode]) -> List[str]:
+    def batch_summarize(self, nodes: list[CodeNode]) -> list[str]:
         """
         Generate summaries for a list of nodes in batches.
         Returns one summary string per node (same order).
         """
-        results: List[str] = [""] * len(nodes)
+        results: list[str] = [""] * len(nodes)
 
         # Filter to summarisable types; others get fallback immediately
-        summarisable: List[Tuple[int, CodeNode]] = []
+        summarisable: list[tuple[int, CodeNode]] = []
         for i, node in enumerate(nodes):
             if node.node_type in SUMMARISE_TYPES and self.llm:
                 summarisable.append((i, node))
@@ -142,7 +148,7 @@ class CodeSummarizer:
 
         # Process in batches
         for batch_start in range(0, len(summarisable), BATCH_SIZE):
-            batch = summarisable[batch_start: batch_start + BATCH_SIZE]
+            batch = summarisable[batch_start : batch_start + BATCH_SIZE]
             batch_summaries = self._call_llm_batch(batch)
             for (orig_idx, _), summary in zip(batch, batch_summaries):
                 results[orig_idx] = summary
@@ -153,10 +159,12 @@ class CodeSummarizer:
     # Internal
     # ------------------------------------------------------------------
 
-    def _call_llm_batch(self, batch: List[Tuple[int, CodeNode]]) -> List[str]:
+    def _call_llm_batch(self, batch: list[tuple[int, CodeNode]]) -> list[str]:
         """Call LLM with a batch of nodes, return one summary per node."""
         n = len(batch)
-        items_text = "\n\n".join(_item_text(node, i) for i, (_, node) in enumerate(batch))
+        items_text = "\n\n".join(
+            _item_text(node, i) for i, (_, node) in enumerate(batch)
+        )
         prompt = f"{_SYSTEM_PROMPT}\n\n" + _BATCH_TEMPLATE.format(n=n, items=items_text)
 
         try:
@@ -166,10 +174,12 @@ class CodeSummarizer:
 
             # Pad / trim to exactly n summaries
             if len(parts) < n:
-                parts += [_fallback_summary(node) for _, node in batch[len(parts):]]
+                parts += [_fallback_summary(node) for _, node in batch[len(parts) :]]
             parts = parts[:n]
-            return [p[:600] if p else _fallback_summary(node)
-                    for p, (_, node) in zip(parts, batch)]
+            return [
+                p[:600] if p else _fallback_summary(node)
+                for p, (_, node) in zip(parts, batch)
+            ]
         except Exception as e:
             logger.warning(f"[Summarizer] Batch LLM call failed: {e}")
             return [_fallback_summary(node) for _, node in batch]

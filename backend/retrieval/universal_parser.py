@@ -18,12 +18,14 @@ Each CodeNode carries:
   - signature         (full method signature)
   - content_type      (code / architecture / config / api)
 """
+
 from __future__ import annotations
-import re
-import os
+
 import logging
+import os
+import re
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Set
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -31,11 +33,13 @@ logger = logging.getLogger(__name__)
 # Data Model
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class CodeNode:
     """Represents a fully-parsed code element with rich metadata."""
+
     # Core
-    node_type: str          # class | function | section | chunk | sql_statement
+    node_type: str  # class | function | section | chunk | sql_statement
     name: str
     code: str
     start_line: int
@@ -44,19 +48,21 @@ class CodeNode:
     file_path: str = ""
 
     # Hierarchy
-    parent_name: Optional[str] = None
+    parent_name: str | None = None
 
     # Semantics
     docstring: str = ""
-    imports: str = ""           # file-level import block
+    imports: str = ""  # file-level import block
 
     # Rich metadata
-    annotations: List[str] = field(default_factory=list)   # @RestController, @staticmethod
-    package: str = ""           # com.wellness.payment.controller
-    framework: str = ""         # spring | fastapi | express | nestjs | django | unknown
-    extends: List[str] = field(default_factory=list)        # parent class names
-    implements: List[str] = field(default_factory=list)     # interface names
-    calls: List[str] = field(default_factory=list)          # called symbols
+    annotations: list[str] = field(
+        default_factory=list
+    )  # @RestController, @staticmethod
+    package: str = ""  # com.wellness.payment.controller
+    framework: str = ""  # spring | fastapi | express | nestjs | django | unknown
+    extends: list[str] = field(default_factory=list)  # parent class names
+    implements: list[str] = field(default_factory=list)  # interface names
+    calls: list[str] = field(default_factory=list)  # called symbols
     return_type: str = ""
     signature: str = ""
 
@@ -64,61 +70,80 @@ class CodeNode:
     content_type: str = "code"  # code | architecture | config | api | summary
 
     # Extra key-value bag (framework-specific fields)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------
 # Language / Extension Registry
 # ---------------------------------------------------------------------------
 
-EXTENSION_TO_LANGUAGE: Dict[str, str] = {
-    ".py":   "python",
+EXTENSION_TO_LANGUAGE: dict[str, str] = {
+    ".py": "python",
     ".java": "java",
-    ".kt":   "kotlin",
-    ".js":   "javascript",
-    ".jsx":  "javascript",
-    ".ts":   "typescript",
-    ".tsx":  "typescript",
-    ".go":   "go",
-    ".cs":   "csharp",
-    ".cpp":  "cpp",
-    ".c":    "c",
-    ".rs":   "rust",
-    ".rb":   "ruby",
-    ".php":  "php",
-    ".sql":  "sql",
-    ".md":   "markdown",
-    ".txt":  "text",
-    ".rst":  "text",
+    ".kt": "kotlin",
+    ".js": "javascript",
+    ".jsx": "javascript",
+    ".ts": "typescript",
+    ".tsx": "typescript",
+    ".go": "go",
+    ".cs": "csharp",
+    ".cpp": "cpp",
+    ".c": "c",
+    ".rs": "rust",
+    ".rb": "ruby",
+    ".php": "php",
+    ".sql": "sql",
+    ".md": "markdown",
+    ".txt": "text",
+    ".rst": "text",
     ".yaml": "yaml",
-    ".yml":  "yaml",
+    ".yml": "yaml",
     ".json": "json",
-    ".xml":  "xml",
-    ".sh":   "bash",
-    ".tf":   "terraform",
+    ".xml": "xml",
+    ".sh": "bash",
+    ".tf": "terraform",
     ".toml": "toml",
     ".properties": "properties",
     ".gradle": "gradle",
 }
 
-ARCHITECTURE_FILENAMES: Set[str] = {
-    "readme.md", "readme.txt", "architecture.md", "design.md",
-    "adr.md", "contributing.md", "changelog.md", "history.md",
+ARCHITECTURE_FILENAMES: set[str] = {
+    "readme.md",
+    "readme.txt",
+    "architecture.md",
+    "design.md",
+    "adr.md",
+    "contributing.md",
+    "changelog.md",
+    "history.md",
 }
 
-API_FILENAMES: Set[str] = {
-    "openapi.yaml", "openapi.yml", "swagger.yaml", "swagger.yml",
-    "swagger.json", "openapi.json",
+API_FILENAMES: set[str] = {
+    "openapi.yaml",
+    "openapi.yml",
+    "swagger.yaml",
+    "swagger.yml",
+    "swagger.json",
+    "openapi.json",
 }
 
-CONFIG_EXTENSIONS: Set[str] = {".yaml", ".yml", ".json", ".xml", ".toml",
-                                ".properties", ".env", ".gradle", ".tf"}
+CONFIG_EXTENSIONS: set[str] = {
+    ".yaml",
+    ".yml",
+    ".json",
+    ".xml",
+    ".toml",
+    ".properties",
+    ".env",
+    ".gradle",
+    ".tf",
+}
 
 # ---------------------------------------------------------------------------
 # Tree-sitter Grammar Cache
 # ---------------------------------------------------------------------------
 
-_TS_LANG_CACHE: Dict[str, Any] = {}
+_TS_LANG_CACHE: dict[str, Any] = {}
 
 
 def _load_ts_lang(lang: str):
@@ -127,18 +152,31 @@ def _load_ts_lang(lang: str):
         return _TS_LANG_CACHE[lang]
     try:
         from tree_sitter import Language
+
         if lang == "python":
-            import tree_sitter_python as m; _TS_LANG_CACHE[lang] = Language(m.language())
+            import tree_sitter_python as m
+
+            _TS_LANG_CACHE[lang] = Language(m.language())
         elif lang == "java":
-            import tree_sitter_java as m; _TS_LANG_CACHE[lang] = Language(m.language())
+            import tree_sitter_java as m
+
+            _TS_LANG_CACHE[lang] = Language(m.language())
         elif lang == "javascript":
-            import tree_sitter_javascript as m; _TS_LANG_CACHE[lang] = Language(m.language())
+            import tree_sitter_javascript as m
+
+            _TS_LANG_CACHE[lang] = Language(m.language())
         elif lang == "typescript":
-            import tree_sitter_typescript as m; _TS_LANG_CACHE[lang] = Language(m.language_typescript())
+            import tree_sitter_typescript as m
+
+            _TS_LANG_CACHE[lang] = Language(m.language_typescript())
         elif lang == "go":
-            import tree_sitter_go as m; _TS_LANG_CACHE[lang] = Language(m.language())
+            import tree_sitter_go as m
+
+            _TS_LANG_CACHE[lang] = Language(m.language())
         elif lang == "csharp":
-            import tree_sitter_c_sharp as m; _TS_LANG_CACHE[lang] = Language(m.language())
+            import tree_sitter_c_sharp as m
+
+            _TS_LANG_CACHE[lang] = Language(m.language())
         else:
             _TS_LANG_CACHE[lang] = None
     except Exception as e:
@@ -150,6 +188,7 @@ def _load_ts_lang(lang: str):
 # ---------------------------------------------------------------------------
 # Language Detection
 # ---------------------------------------------------------------------------
+
 
 def detect_language(file_path: str) -> str:
     ext = os.path.splitext(file_path)[1].lower()
@@ -165,8 +204,15 @@ def detect_content_type(file_path: str, language: str) -> str:
         return "architecture"
     if fn in API_FILENAMES:
         return "api"
-    if ext in CONFIG_EXTENSIONS or language in ("yaml", "json", "xml", "toml",
-                                                 "terraform", "properties", "gradle"):
+    if ext in CONFIG_EXTENSIONS or language in (
+        "yaml",
+        "json",
+        "xml",
+        "toml",
+        "terraform",
+        "properties",
+        "gradle",
+    ):
         return "config"
     # Heuristic: controllers/routes → api
     if any(kw in fn for kw in ("controller", "router", "route", "endpoint", "handler")):
@@ -178,15 +224,16 @@ def detect_content_type(file_path: str, language: str) -> str:
 # Package / Namespace Extraction
 # ---------------------------------------------------------------------------
 
-_PACKAGE_PATTERNS: Dict[str, List[str]] = {
-    "java":       [r"^\s*package\s+([\w.]+)\s*;"],
-    "kotlin":     [r"^\s*package\s+([\w.]+)"],
-    "csharp":     [r"^\s*namespace\s+([\w.]+)"],
-    "go":         [r"^\s*package\s+(\w+)"],
+_PACKAGE_PATTERNS: dict[str, list[str]] = {
+    "java": [r"^\s*package\s+([\w.]+)\s*;"],
+    "kotlin": [r"^\s*package\s+([\w.]+)"],
+    "csharp": [r"^\s*namespace\s+([\w.]+)"],
+    "go": [r"^\s*package\s+(\w+)"],
     "typescript": [r"declare\s+module\s+[\"']([\w/@-]+)[\"']"],
     "javascript": [],
-    "python":     [],   # Python uses __package__ / directory structure
+    "python": [],  # Python uses __package__ / directory structure
 }
+
 
 def _extract_package(source: str, language: str) -> str:
     for pat in _PACKAGE_PATTERNS.get(language, []):
@@ -200,18 +247,27 @@ def _extract_package(source: str, language: str) -> str:
 # Framework Detection
 # ---------------------------------------------------------------------------
 
-_FRAMEWORK_SIGNALS: Dict[str, List[str]] = {
-    "spring":    ["@SpringBootApplication", "@RestController", "@Service", "@Repository",
-                  "org.springframework", "@Autowired", "@Bean", "@Component"],
-    "fastapi":   ["from fastapi", "FastAPI(", "@app.get", "@app.post", "@router."],
-    "django":    ["from django", "django.db", "models.Model", "views.View"],
-    "flask":     ["from flask", "Flask(__name__", "@app.route"],
-    "express":   ["require('express')", "require(\"express\")", "express()", "Router()"],
-    "nestjs":    ["@Controller", "@Injectable", "@Module", "from '@nestjs"],
-    "gin":       ["\"github.com/gin-gonic/gin\"", "gin.Default()", "gin.New()"],
-    "dotnet":    ["using Microsoft.AspNetCore", "[ApiController]", "ControllerBase"],
+_FRAMEWORK_SIGNALS: dict[str, list[str]] = {
+    "spring": [
+        "@SpringBootApplication",
+        "@RestController",
+        "@Service",
+        "@Repository",
+        "org.springframework",
+        "@Autowired",
+        "@Bean",
+        "@Component",
+    ],
+    "fastapi": ["from fastapi", "FastAPI(", "@app.get", "@app.post", "@router."],
+    "django": ["from django", "django.db", "models.Model", "views.View"],
+    "flask": ["from flask", "Flask(__name__", "@app.route"],
+    "express": ["require('express')", 'require("express")', "express()", "Router()"],
+    "nestjs": ["@Controller", "@Injectable", "@Module", "from '@nestjs"],
+    "gin": ['"github.com/gin-gonic/gin"', "gin.Default()", "gin.New()"],
+    "dotnet": ["using Microsoft.AspNetCore", "[ApiController]", "ControllerBase"],
     "hibernate": ["@Entity", "@Table", "@Column", "javax.persistence"],
 }
+
 
 def _detect_framework(source: str) -> str:
     for fw, signals in _FRAMEWORK_SIGNALS.items():
@@ -225,9 +281,17 @@ def _detect_framework(source: str) -> str:
 # ---------------------------------------------------------------------------
 
 _IMPORT_PREFIXES = (
-    "import ", "from ", "package ", "using ", "require(",
-    "#include", "extern crate", "use std", "use crate",
+    "import ",
+    "from ",
+    "package ",
+    "using ",
+    "require(",
+    "#include",
+    "extern crate",
+    "use std",
+    "use crate",
 )
+
 
 def _extract_imports(source: str) -> str:
     lines = []
@@ -242,28 +306,36 @@ def _extract_imports(source: str) -> str:
 # Sliding Window Chunker (Universal Fallback)
 # ---------------------------------------------------------------------------
 
-def _sliding_window(text: str, file_path: str, language: str,
-                    chunk_size: int = 60, overlap: int = 15,
-                    content_type: str = "code") -> List[CodeNode]:
+
+def _sliding_window(
+    text: str,
+    file_path: str,
+    language: str,
+    chunk_size: int = 60,
+    overlap: int = 15,
+    content_type: str = "code",
+) -> list[CodeNode]:
     lines = text.splitlines()
     if not lines:
         return []
-    chunks: List[CodeNode] = []
+    chunks: list[CodeNode] = []
     i, idx = 0, 0
     while i < len(lines):
         end = min(i + chunk_size, len(lines))
         snippet = "\n".join(lines[i:end])
         if snippet.strip():
-            chunks.append(CodeNode(
-                node_type="chunk",
-                name=f"chunk_{idx}",
-                code=snippet,
-                start_line=i + 1,
-                end_line=end,
-                language=language,
-                file_path=file_path,
-                content_type=content_type,
-            ))
+            chunks.append(
+                CodeNode(
+                    node_type="chunk",
+                    name=f"chunk_{idx}",
+                    code=snippet,
+                    start_line=i + 1,
+                    end_line=end,
+                    language=language,
+                    file_path=file_path,
+                    content_type=content_type,
+                )
+            )
             idx += 1
         i += chunk_size - overlap
     return chunks
@@ -273,10 +345,11 @@ def _sliding_window(text: str, file_path: str, language: str,
 # Markdown Heading-Aware Splitter
 # ---------------------------------------------------------------------------
 
-def _parse_markdown(text: str, file_path: str) -> List[CodeNode]:
-    heading_re = re.compile(r'^(#{1,6})\s+(.+)', re.MULTILINE)
+
+def _parse_markdown(text: str, file_path: str) -> list[CodeNode]:
+    heading_re = re.compile(r"^(#{1,6})\s+(.+)", re.MULTILINE)
     lines = text.splitlines()
-    sections: List[tuple] = []
+    sections: list[tuple] = []
     cur_heading, cur_lines = "Document Overview", []
 
     for line in lines:
@@ -291,59 +364,73 @@ def _parse_markdown(text: str, file_path: str) -> List[CodeNode]:
     if cur_lines:
         sections.append((cur_heading, cur_lines))
 
-    nodes: List[CodeNode] = []
+    nodes: list[CodeNode] = []
     sl = 1
     for heading, sec_lines in sections:
         content = "\n".join(sec_lines)
         el = sl + len(sec_lines) - 1
         if len(sec_lines) <= 80:
             if content.strip():
-                nodes.append(CodeNode(
-                    node_type="section",
-                    name=heading,
-                    code=content,
-                    start_line=sl,
-                    end_line=el,
-                    language="markdown",
-                    file_path=file_path,
-                    content_type="architecture",
-                ))
+                nodes.append(
+                    CodeNode(
+                        node_type="section",
+                        name=heading,
+                        code=content,
+                        start_line=sl,
+                        end_line=el,
+                        language="markdown",
+                        file_path=file_path,
+                        content_type="architecture",
+                    )
+                )
         else:
-            for chunk in _sliding_window(content, file_path, "markdown",
-                                         chunk_size=60, overlap=10,
-                                         content_type="architecture"):
+            for chunk in _sliding_window(
+                content,
+                file_path,
+                "markdown",
+                chunk_size=60,
+                overlap=10,
+                content_type="architecture",
+            ):
                 chunk.name = f"{heading} [{chunk.start_line}-{chunk.end_line}]"
                 chunk.node_type = "section"
                 nodes.append(chunk)
         sl = el + 1
 
-    return nodes or _sliding_window(text, file_path, "markdown", content_type="architecture")
+    return nodes or _sliding_window(
+        text, file_path, "markdown", content_type="architecture"
+    )
 
 
 # ---------------------------------------------------------------------------
 # SQL Statement Splitter
 # ---------------------------------------------------------------------------
 
-def _parse_sql(text: str, file_path: str) -> List[CodeNode]:
+
+def _parse_sql(text: str, file_path: str) -> list[CodeNode]:
     statements = [s.strip() for s in text.split(";") if s.strip()]
-    nodes: List[CodeNode] = []
+    nodes: list[CodeNode] = []
     line_counter = 1
     for i, stmt in enumerate(statements):
         stmt_lines = stmt.splitlines()
         el = line_counter + len(stmt_lines)
         first_word = stmt.lstrip().split()[0].upper() if stmt.strip() else "SQL"
-        nm = re.search(r'(?:TABLE|VIEW|INDEX|PROCEDURE|FUNCTION)\s+(\w+)', stmt, re.IGNORECASE)
+        nm = re.search(
+            r"(?:TABLE|VIEW|INDEX|PROCEDURE|FUNCTION)\s+(\w+)", stmt, re.IGNORECASE
+        )
         name = nm.group(1) if nm else f"statement_{i}"
-        nodes.append(CodeNode(
-            node_type="sql_statement",
-            name=f"{first_word}_{name}",
-            code=stmt,
-            start_line=line_counter,
-            end_line=el,
-            language="sql",
-            file_path=file_path,
-            content_type="code",
-        ))
+        nodes.append(
+            CodeNode(
+                node_type="sql_statement",
+                name=f"{first_word}_{name}",
+                code=stmt,
+                start_line=line_counter,
+                end_line=el,
+                language="sql",
+                file_path=file_path,
+                content_type="code",
+            )
+        )
         line_counter = el + 2
     return nodes or _sliding_window(text, file_path, "sql")
 
@@ -352,36 +439,60 @@ def _parse_sql(text: str, file_path: str) -> List[CodeNode]:
 # Tree-sitter Node Type Maps
 # ---------------------------------------------------------------------------
 
-LANG_NODE_TYPES: Dict[str, Dict[str, List[str]]] = {
+LANG_NODE_TYPES: dict[str, dict[str, list[str]]] = {
     "python": {
-        "class":    ["class_definition"],
+        "class": ["class_definition"],
         "function": ["function_definition", "decorated_definition"],
     },
     "java": {
-        "class":    ["class_declaration", "interface_declaration",
-                     "enum_declaration", "annotation_type_declaration"],
+        "class": [
+            "class_declaration",
+            "interface_declaration",
+            "enum_declaration",
+            "annotation_type_declaration",
+        ],
         "function": ["method_declaration", "constructor_declaration"],
     },
     "javascript": {
-        "class":    ["class_declaration", "class_expression"],
-        "function": ["function_declaration", "arrow_function",
-                     "method_definition", "generator_function_declaration"],
+        "class": ["class_declaration", "class_expression"],
+        "function": [
+            "function_declaration",
+            "arrow_function",
+            "method_definition",
+            "generator_function_declaration",
+        ],
     },
     "typescript": {
-        "class":    ["class_declaration", "interface_declaration",
-                     "abstract_class_declaration", "enum_declaration"],
-        "function": ["function_declaration", "arrow_function", "method_definition",
-                     "abstract_method_signature"],
+        "class": [
+            "class_declaration",
+            "interface_declaration",
+            "abstract_class_declaration",
+            "enum_declaration",
+        ],
+        "function": [
+            "function_declaration",
+            "arrow_function",
+            "method_definition",
+            "abstract_method_signature",
+        ],
     },
     "go": {
-        "class":    ["type_declaration"],
+        "class": ["type_declaration"],
         "function": ["function_declaration", "method_declaration"],
     },
     "csharp": {
-        "class":    ["class_declaration", "interface_declaration",
-                     "struct_declaration", "enum_declaration", "record_declaration"],
-        "function": ["method_declaration", "constructor_declaration",
-                     "local_function_statement"],
+        "class": [
+            "class_declaration",
+            "interface_declaration",
+            "struct_declaration",
+            "enum_declaration",
+            "record_declaration",
+        ],
+        "function": [
+            "method_declaration",
+            "constructor_declaration",
+            "local_function_statement",
+        ],
     },
 }
 
@@ -389,14 +500,23 @@ LANG_NODE_TYPES: Dict[str, Dict[str, List[str]]] = {
 # Helper: extract identifier text
 # ---------------------------------------------------------------------------
 
+
 def _node_text(node, source_bytes: bytes) -> str:
-    return source_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore")
+    return source_bytes[node.start_byte : node.end_byte].decode(
+        "utf-8", errors="ignore"
+    )
 
 
 def _get_identifier(node, source_bytes: bytes) -> str:
     for child in node.children:
-        if child.type in ("identifier", "type_identifier", "field_identifier",
-                          "property_identifier", "name", "simple_identifier"):
+        if child.type in (
+            "identifier",
+            "type_identifier",
+            "field_identifier",
+            "property_identifier",
+            "name",
+            "simple_identifier",
+        ):
             return _node_text(child, source_bytes)
     return "unknown"
 
@@ -405,9 +525,10 @@ def _get_identifier(node, source_bytes: bytes) -> str:
 # Annotation / Decorator extraction
 # ---------------------------------------------------------------------------
 
-def _extract_annotations_python(node, source_bytes: bytes) -> List[str]:
+
+def _extract_annotations_python(node, source_bytes: bytes) -> list[str]:
     """Extract Python decorator names from a decorated_definition or class/function."""
-    anns: List[str] = []
+    anns: list[str] = []
     for child in node.children:
         if child.type == "decorator":
             text = _node_text(child, source_bytes).strip()
@@ -415,18 +536,18 @@ def _extract_annotations_python(node, source_bytes: bytes) -> List[str]:
     return anns
 
 
-def _extract_annotations_java(node, source_bytes: bytes, lines: List[str]) -> List[str]:
+def _extract_annotations_java(node, source_bytes: bytes, lines: list[str]) -> list[str]:
     """Look at lines just above a Java node for @Annotation tokens."""
     start = max(0, node.start_point[0] - 10)
-    preceding = "\n".join(lines[start:node.start_point[0]])
-    return re.findall(r'@[\w.]+', preceding)
+    preceding = "\n".join(lines[start : node.start_point[0]])
+    return re.findall(r"@[\w.]+", preceding)
 
 
 _ANNOTATION_EXTRACTORS = {
-    "python":     _extract_annotations_python,
-    "java":       _extract_annotations_java,
-    "kotlin":     _extract_annotations_java,   # same pattern
-    "csharp":     _extract_annotations_java,
+    "python": _extract_annotations_python,
+    "java": _extract_annotations_java,
+    "kotlin": _extract_annotations_java,  # same pattern
+    "csharp": _extract_annotations_java,
     "typescript": _extract_annotations_java,
 }
 
@@ -434,18 +555,23 @@ _ANNOTATION_EXTRACTORS = {
 # Extends / Implements extraction
 # ---------------------------------------------------------------------------
 
-def _get_extends_implements(node, source_bytes: bytes) -> tuple[List[str], List[str]]:
+
+def _get_extends_implements(node, source_bytes: bytes) -> tuple[list[str], list[str]]:
     """Extract extends and implements type names from a class node."""
-    extends: List[str] = []
-    implements: List[str] = []
+    extends: list[str] = []
+    implements: list[str] = []
     for child in node.children:
         if child.type in ("superclass", "extends_clause"):
             text = _node_text(child, source_bytes)
-            extends += re.findall(r'\b[A-Z]\w+', text)
-        elif child.type in ("super_interfaces", "implements_clause",
-                            "class_implements", "interface_body"):
+            extends += re.findall(r"\b[A-Z]\w+", text)
+        elif child.type in (
+            "super_interfaces",
+            "implements_clause",
+            "class_implements",
+            "interface_body",
+        ):
             text = _node_text(child, source_bytes)
-            implements += re.findall(r'\b[A-Z]\w+', text)
+            implements += re.findall(r"\b[A-Z]\w+", text)
     return extends, implements
 
 
@@ -454,32 +580,57 @@ def _get_extends_implements(node, source_bytes: bytes) -> tuple[List[str], List[
 # ---------------------------------------------------------------------------
 
 _CALL_PATTERNS = [
-    re.compile(r'\b(\w+)\s*\('),                   # foo(
-    re.compile(r'(\w+)\.(\w+)\s*\('),              # obj.method(
+    re.compile(r"\b(\w+)\s*\("),  # foo(
+    re.compile(r"(\w+)\.(\w+)\s*\("),  # obj.method(
 ]
 
-def _extract_calls(code: str) -> List[str]:
+
+def _extract_calls(code: str) -> list[str]:
     """Heuristically extract called identifiers from code."""
-    calls: Set[str] = set()
+    calls: set[str] = set()
     for pat in _CALL_PATTERNS:
         for m in pat.finditer(code):
             name = m.group(1) if pat.groups == 1 else m.group(2)
             # Skip language keywords and common stdlib noise
-            if name and len(name) > 2 and not name.startswith(
-                ("if", "for", "while", "return", "print", "len",
-                 "str", "int", "list", "dict", "set", "type")):
+            if (
+                name
+                and len(name) > 2
+                and not name.startswith(
+                    (
+                        "if",
+                        "for",
+                        "while",
+                        "return",
+                        "print",
+                        "len",
+                        "str",
+                        "int",
+                        "list",
+                        "dict",
+                        "set",
+                        "type",
+                    )
+                )
+            ):
                 calls.add(name)
-    return sorted(calls)[:20]   # cap at 20 per node
+    return sorted(calls)[:20]  # cap at 20 per node
 
 
 # ---------------------------------------------------------------------------
 # Return type extraction
 # ---------------------------------------------------------------------------
 
+
 def _get_return_type(node, source_bytes: bytes) -> str:
     for child in node.children:
-        if child.type in ("type_annotation", "type", "void_type",
-                          "generic_type", "array_type", "return_type"):
+        if child.type in (
+            "type_annotation",
+            "type",
+            "void_type",
+            "generic_type",
+            "array_type",
+            "return_type",
+        ):
             return _node_text(child, source_bytes).strip().lstrip(":").strip()
     return ""
 
@@ -487,6 +638,7 @@ def _get_return_type(node, source_bytes: bytes) -> str:
 # ---------------------------------------------------------------------------
 # Docstring extraction
 # ---------------------------------------------------------------------------
+
 
 def _get_docstring(node, source_bytes: bytes) -> str:
     for child in node.children:
@@ -505,13 +657,15 @@ def _get_docstring(node, source_bytes: bytes) -> str:
 # Tree-sitter AST Parser (core)
 # ---------------------------------------------------------------------------
 
-def _parse_with_ts(text: str, file_path: str, language: str) -> List[CodeNode]:
+
+def _parse_with_ts(text: str, file_path: str, language: str) -> list[CodeNode]:
     ts_lang = _load_ts_lang(language)
     if ts_lang is None:
         return []
 
     try:
         from tree_sitter import Parser
+
         parser = Parser(ts_lang)
         source_bytes = text.encode("utf-8")
         tree = parser.parse(source_bytes)
@@ -522,25 +676,25 @@ def _parse_with_ts(text: str, file_path: str, language: str) -> List[CodeNode]:
     lines = text.splitlines()
     type_map = LANG_NODE_TYPES.get(language, {})
     class_types = set(type_map.get("class", []))
-    func_types  = set(type_map.get("function", []))
-    all_types   = class_types | func_types
+    func_types = set(type_map.get("function", []))
+    all_types = class_types | func_types
 
-    imports   = _extract_imports(text)
-    package   = _extract_package(text, language)
+    imports = _extract_imports(text)
+    package = _extract_package(text, language)
     framework = _detect_framework(text)
     content_type = detect_content_type(file_path, language)
-    nodes: List[CodeNode] = []
+    nodes: list[CodeNode] = []
 
-    def walk(node, parent_class: Optional[str] = None):
+    def walk(node, parent_class: str | None = None):
         if node.type in all_types:
-            name       = _get_identifier(node, source_bytes)
-            sl         = node.start_point[0] + 1
-            el         = node.end_point[0] + 1
-            snippet    = "\n".join(lines[sl - 1:el])[:4000]
-            docstr     = _get_docstring(node, source_bytes)
-            ret_type   = _get_return_type(node, source_bytes)
-            calls      = _extract_calls(snippet)
-            ext, impl  = _get_extends_implements(node, source_bytes)
+            name = _get_identifier(node, source_bytes)
+            sl = node.start_point[0] + 1
+            el = node.end_point[0] + 1
+            snippet = "\n".join(lines[sl - 1 : el])[:4000]
+            docstr = _get_docstring(node, source_bytes)
+            ret_type = _get_return_type(node, source_bytes)
+            calls = _extract_calls(snippet)
+            ext, impl = _get_extends_implements(node, source_bytes)
             type_label = "class" if node.type in class_types else "function"
 
             # Annotations / decorators
@@ -553,32 +707,34 @@ def _parse_with_ts(text: str, file_path: str, language: str) -> List[CodeNode]:
                 annotations = []
 
             # Build method signature string
-            sig_end  = min(el, sl + 4)
-            sig_code = "\n".join(lines[sl - 1:sig_end])
+            sig_end = min(el, sl + 4)
+            sig_code = "\n".join(lines[sl - 1 : sig_end])
             # Trim at first { or : or newline after paren
             sig_line = sig_code.split("{")[0].split(":\n")[0].strip()[:200]
 
-            nodes.append(CodeNode(
-                node_type    = type_label,
-                name         = name,
-                code         = snippet,
-                start_line   = sl,
-                end_line     = el,
-                language     = language,
-                file_path    = file_path,
-                parent_name  = parent_class,
-                docstring    = docstr,
-                imports      = imports,
-                annotations  = annotations,
-                package      = package,
-                framework    = framework,
-                extends      = ext,
-                implements   = impl,
-                calls        = calls,
-                return_type  = ret_type,
-                signature    = sig_line,
-                content_type = content_type,
-            ))
+            nodes.append(
+                CodeNode(
+                    node_type=type_label,
+                    name=name,
+                    code=snippet,
+                    start_line=sl,
+                    end_line=el,
+                    language=language,
+                    file_path=file_path,
+                    parent_name=parent_class,
+                    docstring=docstr,
+                    imports=imports,
+                    annotations=annotations,
+                    package=package,
+                    framework=framework,
+                    extends=ext,
+                    implements=impl,
+                    calls=calls,
+                    return_type=ret_type,
+                    signature=sig_line,
+                    content_type=content_type,
+                )
+            )
 
             new_parent = name if type_label == "class" else parent_class
             for child in node.children:
@@ -595,7 +751,8 @@ def _parse_with_ts(text: str, file_path: str, language: str) -> List[CodeNode]:
 # Universal Entry Point
 # ---------------------------------------------------------------------------
 
-def parse_file(file_path: str, content: str) -> List[CodeNode]:
+
+def parse_file(file_path: str, content: str) -> list[CodeNode]:
     """
     Parse any source/doc/config file into a list of richly-annotated CodeNodes.
     Strategy selection is fully automatic based on file extension.
@@ -614,11 +771,21 @@ def parse_file(file_path: str, content: str) -> List[CodeNode]:
         return _parse_sql(content, file_path)
 
     # Config/Data → sliding window
-    if language in ("yaml", "json", "xml", "text", "terraform", "bash",
-                    "toml", "properties", "gradle"):
+    if language in (
+        "yaml",
+        "json",
+        "xml",
+        "text",
+        "terraform",
+        "bash",
+        "toml",
+        "properties",
+        "gradle",
+    ):
         ct = detect_content_type(file_path, language)
-        return _sliding_window(content, file_path, language,
-                               chunk_size=50, overlap=10, content_type=ct)
+        return _sliding_window(
+            content, file_path, language, chunk_size=50, overlap=10, content_type=ct
+        )
 
     # Source code → tree-sitter AST
     if language in LANG_NODE_TYPES:
@@ -628,20 +795,22 @@ def parse_file(file_path: str, content: str) -> List[CodeNode]:
 
     # Universal fallback → sliding window
     ct = detect_content_type(file_path, language)
-    return _sliding_window(content, file_path, language,
-                           chunk_size=60, overlap=15, content_type=ct)
+    return _sliding_window(
+        content, file_path, language, chunk_size=60, overlap=15, content_type=ct
+    )
 
 
 # ---------------------------------------------------------------------------
 # Chunk Content Builder
 # ---------------------------------------------------------------------------
 
+
 def build_chunk_content(node: CodeNode) -> str:
     """
     Build the final rich text for a CodeNode that will be embedded.
     Includes: package context + annotations + semantic header + docstring + code.
     """
-    parts: List[str] = []
+    parts: list[str] = []
 
     # Package / namespace header
     if node.package:
@@ -688,8 +857,9 @@ def build_chunk_content(node: CodeNode) -> str:
 # Singleton
 # ---------------------------------------------------------------------------
 
+
 class UniversalCodeParser:
-    def parse(self, file_path: str, content: str) -> List[CodeNode]:
+    def parse(self, file_path: str, content: str) -> list[CodeNode]:
         return parse_file(file_path, content)
 
     def detect_language(self, file_path: str) -> str:

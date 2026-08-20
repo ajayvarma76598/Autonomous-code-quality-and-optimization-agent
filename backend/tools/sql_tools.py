@@ -1,11 +1,14 @@
 import logging
-from langchain_core.tools import tool
+
 from langchain_community.utilities.sql_database import SQLDatabase
+from langchain_core.tools import tool
+
 from backend.config import settings
 
 logger = logging.getLogger(__name__)
 
 _sql_db = None
+
 
 def get_sql_db():
     global _sql_db
@@ -21,6 +24,7 @@ def get_sql_db():
             _sql_db = None
     return _sql_db
 
+
 @tool
 def execute_sql_query(query: str) -> str:
     """
@@ -28,8 +32,10 @@ def execute_sql_query(query: str) -> str:
     Available tables:
     - repositories: repository_id, name, git_provider, description
     - repository_files: file_id, path, filename, extension, line_count
-    - code_quality_metrics: metric_id, file_id, cyclomatic_complexity, maintainability_index, code_smell_count, test_coverage_percentage
-    - performance_logs: log_id, repository_id, service_name, average_response_time_ms, error_rate_percentage, throughput_requests_per_second
+    - code_quality_metrics: metric_id, file_id, cyclomatic_complexity, maintainability_index,
+      code_smell_count, test_coverage_percentage
+    - performance_logs: log_id, repository_id, service_name, average_response_time_ms,
+      error_rate_percentage, throughput_requests_per_second
 
     Use this tool to find files with high complexity, low maintainability, or services with high error rates.
     Make sure to write valid PostgreSQL queries.
@@ -37,7 +43,7 @@ def execute_sql_query(query: str) -> str:
     db = get_sql_db()
     if not db:
         return "Error: Database connection not available."
-    
+
     try:
         result = db.run(query)
         return result
