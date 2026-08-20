@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 const INGESTION_STEPS = [
   "Cloning repository from source...",
   "Parsing Abstract Syntax Trees (AST)...",
@@ -48,7 +50,7 @@ const DeveloperDashboard = () => {
 
   const fetchSessions = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/v1/sessions/', {
+      const res = await fetch(`${API_URL}/api/v1/sessions/`, {
         headers: await getHeaders()
       });
       if (res.ok) setSessions(await res.json());
@@ -57,7 +59,7 @@ const DeveloperDashboard = () => {
 
   const fetchRepos = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/v1/repositories/', {
+      const res = await fetch(`${API_URL}/api/v1/repositories/`, {
         headers: await getHeaders()
       });
       if (res.ok) {
@@ -78,7 +80,7 @@ const DeveloperDashboard = () => {
         return;
       }
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/repositories/${selectedRepoId}/snapshots`, {
+        const res = await fetch(`${API_URL}/api/v1/repositories/${selectedRepoId}/snapshots`, {
           headers: await getHeaders()
         });
         if (res.ok) {
@@ -111,7 +113,7 @@ const DeveloperDashboard = () => {
     if (!repoPath) return;
     setIngesting(true);
     try {
-      const response = await fetch('http://localhost:8000/api/v1/ingestion/trigger', {
+      const response = await fetch(`${API_URL}/api/v1/ingestion/trigger`, {
         method: 'POST',
         headers: await getHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ repo_path: repoPath, project_key: "default-project" })
@@ -133,7 +135,7 @@ const DeveloperDashboard = () => {
   const handleSelectSession = async (id: string) => {
     setActiveSessionId(id);
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/sessions/${id}/history`, {
+      const res = await fetch(`${API_URL}/api/v1/sessions/${id}/history`, {
         headers: await getHeaders()
       });
       if (res.ok) {
@@ -151,7 +153,7 @@ const DeveloperDashboard = () => {
   const handleDeleteSession = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     try {
-      await fetch(`http://localhost:8000/api/v1/sessions/${id}`, { 
+      await fetch(`${API_URL}/api/v1/sessions/${id}`, { 
         method: 'DELETE',
         headers: await getHeaders()
       });
@@ -183,7 +185,7 @@ const DeveloperDashboard = () => {
       }
       const repo = availableRepos.find(r => r.repository_id === selectedRepoId);
       try {
-        const res = await fetch('http://localhost:8000/api/v1/sessions/', {
+        const res = await fetch(`${API_URL}/api/v1/sessions/`, {
           method: 'POST',
           headers: await getHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({
@@ -208,7 +210,7 @@ const DeveloperDashboard = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/query/stream', {
+      const response = await fetch(`${API_URL}/api/v1/query/stream`, {
         method: 'POST',
         headers: await getHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ 
