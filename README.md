@@ -1,248 +1,435 @@
-Autonomous Code Quality & Optimization Intelligence System
-An AI-powered, multi-agent software intelligence platform that analyzes source-code repositories, evaluates code quality, identifies architectural and performance issues, and generates grounded recommendations for optimization, documentation, and refactoring.
+````markdown
+# 🚀 Autonomous Code Quality & Optimization Intelligence System
 
-👨‍💻 Project
-Autonomous Code Quality & Optimization Intelligence System
+An AI-powered **Agentic Software Engineering platform** that autonomously analyzes software repositories, identifies code-quality and performance issues, evaluates software architecture, analyzes test coverage, and generates evidence-grounded optimization recommendations.
 
-An Agentic AI platform for repository understanding, software-quality analysis, performance optimization, architecture review, documentation generation and evidence-grounded developer assistance.
+The system combines **Agentic AI, LangGraph, Retrieval-Augmented Generation (RAG), hybrid retrieval, static code analysis, performance profiling, test coverage analysis, and software-quality metrics** to provide developers and engineering managers with an intelligent code-quality assistant.
 
-🚀 Live Demo
-Demo Application:
-https://autonomous-code-quality-and-optimization-rg5g.onrender.com/
+The core principle of the system is:
 
-Demo Credentials
-These credentials are provided for demonstration purposes only.
+> **Analyze → Retrieve Evidence → Reason → Evaluate → Respond**
 
-Role	User ID	Password
-Developer	user@gmail.com	user@123
-Manager	admin@gmail.com	admin@123
-The application provides different capabilities and dashboards based on the authenticated role.
+---
 
-Developer: repository analysis, queries, code-quality insights, analysis results and execution views.
+# 🌐 Live Demo
 
-Manager: management/operational views, quality metrics, system-level monitoring and manager-only functionality.
+## 🔗 Try the Application
 
-🎯 Project Overview
-The Autonomous Code Quality & Optimization Intelligence System combines traditional static-analysis tools with Retrieval-Augmented Generation (RAG) and agentic AI workflows.
+### **[Open Autonomous Code Quality & Optimization System](https://autonomous-code-quality-and-optimization-rg5g.onrender.com/)**
 
-Instead of relying only on an LLM to inspect an entire repository, the system combines:
+You can directly access the deployed application and explore the system using the demo accounts below.
 
-Repository ingestion and source-code parsing
+---
 
-AST-based analysis using Tree-sitter
+## 🔐 Demo Credentials
 
-Semantic vector retrieval
+### 👨‍💻 Developer Account
 
-BM25 keyword retrieval
+```text
+User ID:  user@gmail.com
+Password: user@123
+````
 
-Hybrid retrieval with Reciprocal Rank Fusion (RRF)
+### 👨‍💼 Manager Account
 
-Dependency-graph expansion
+```text
+User ID:  admin@gmail.com
+Password: admin@123
+```
 
-LLM-based re-ranking
+| Role            | User ID           | Password    |
+| --------------- | ----------------- | ----------- |
+| 👨‍💻 Developer | `user@gmail.com`  | `user@123`  |
+| 👨‍💼 Manager   | `admin@gmail.com` | `admin@123` |
 
-SonarQube quality metrics
+> **Note:** These credentials are provided specifically for project demonstration and evaluation.
 
-Radon complexity analysis
+---
 
-Scalene performance profiling
+# 🎯 What Does This Project Do?
 
-Specialized AI agents
+The system acts as an **AI-powered software engineering assistant** capable of understanding and analyzing a complete software repository.
 
-LangGraph workflow orchestration
+Instead of simply sending source code to an LLM and asking for an opinion, the platform combines multiple sources of engineering evidence:
 
-Guardrails and evaluation
+* Repository source code
+* AST-based code analysis
+* Semantic search
+* BM25 keyword retrieval
+* Dependency relationships
+* SonarQube metrics
+* Test coverage
+* Radon complexity analysis
+* Scalene performance profiling
+* Software architecture analysis
+* Engineering knowledge documents
 
-Langfuse observability
+The retrieved evidence is then provided to specialized AI agents that reason about the repository and generate actionable recommendations.
 
-PostgreSQL + pgvector persistence
+---
 
-Redis-based caching
+# ⭐ Why This Project?
 
-Auth0 authentication and role-based access control
+Traditional code-quality tools provide metrics and static-analysis results, while LLM-based coding assistants provide natural-language reasoning.
 
-The goal is to provide an AI software-engineering assistant that produces evidence-grounded code-quality recommendations rather than unsupported LLM opinions.
+This project combines both approaches.
 
-✨ Key Features
-1. Multi-Agent AI Orchestration
-The backend uses a LangGraph-based workflow with specialized agents.
+```text
+Traditional Software Analysis
+            +
+Repository Understanding
+            +
+Hybrid RAG
+            +
+Agentic AI
+            +
+Quality Evaluation
+            ↓
+Evidence-Grounded Code Intelligence
+```
 
-User Query
-    │
-    ▼
-Guardrail Agent
-    │
-    ▼
-Manager / Supervisor Agent
-    │
-    ├── Repository Agent
-    ├── Architecture Agent
-    ├── Performance Agent
-    ├── Test Coverage Agent
-    ├── Documentation Agent
-    └── Quality Analysis Pipeline
-            │
-            ├── Repository Parser
-            ├── SonarQube Metrics
-            ├── Architecture Reviewer
-            └── Quality Report Generator
-    │
-    ▼
+The goal is to move beyond simple AI code generation toward **autonomous, evidence-driven software engineering analysis**.
+
+---
+
+# ✨ Key Features
+
+### 🤖 Multi-Agent AI
+
+Specialized agents are responsible for different software-engineering tasks such as:
+
+* Repository analysis
+* Architecture analysis
+* Performance analysis
+* Test coverage analysis
+* Documentation
+* Code-quality analysis
+* Report generation
+
+### 🧠 LangGraph Orchestration
+
+LangGraph is used to coordinate the multi-agent workflow and control the execution path based on the user's request.
+
+### 🔎 Hybrid RAG
+
+The retrieval layer combines:
+
+* Vector semantic search
+* BM25 keyword search
+* Reciprocal Rank Fusion (RRF)
+* Dependency graph expansion
+* Result diversification
+* LLM-based re-ranking
+
+### 📊 Code Quality Analysis
+
+The platform integrates:
+
+* SonarQube
+* Radon
+* Scalene
+* Test coverage
+* Static analysis
+* Architecture analysis
+
+### 🛡️ AI Guardrails
+
+Guardrails help detect:
+
+* Prompt injection
+* Malicious requests
+* Destructive operations
+* Requests for secrets
+* Unsafe actions
+* Irrelevant requests
+
+### ✅ Evaluation Agent
+
+AI-generated analysis is evaluated before being returned as a final result.
+
+### 👤 Human Escalation
+
+When an analysis does not satisfy the evaluation criteria, the system can escalate the result for human validation.
+
+### 🔐 Authentication & RBAC
+
+Auth0 is used for authentication and role-based access.
+
+The system provides separate experiences for:
+
+* Developer
+* Manager
+
+### 📈 Observability
+
+Langfuse provides visibility into:
+
+* Agent execution
+* LLM calls
+* Workflow transitions
+* Query sessions
+* Execution time
+* Evaluation information
+* Trace information
+
+---
+
+# 🧠 Agentic AI Workflow
+
+A typical request follows this workflow:
+
+```text
+                         User Query
+                              │
+                              ▼
+                    ┌──────────────────┐
+                    │  Guardrail Agent │
+                    └────────┬─────────┘
+                             │
+                             ▼
+                    ┌──────────────────┐
+                    │  Manager Agent   │
+                    └────────┬─────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              │              │              │
+              ▼              ▼              ▼
+        Repository      Architecture    Performance
+          Agent            Agent           Agent
+              │              │              │
+              └──────────────┼──────────────┘
+                             │
+              ┌──────────────┴──────────────┐
+              │                             │
+              ▼                             ▼
+        Coverage Agent              Documentation Agent
+              │                             │
+              └──────────────┬──────────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │ Quality Analysis    │
+                  │ Pipeline            │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │ Evaluation Agent    │
+                  └──────────┬──────────┘
+                             │
+                    ┌────────┴────────┐
+                    │                 │
+                   PASS              FAIL
+                    │                 │
+                    ▼                 ▼
+             Final Response      Escalation
+                                      │
+                                      ▼
+                              Human Validation
+```
+
+---
+
+# 🔎 Hybrid RAG Architecture
+
+The system uses multiple retrieval strategies to improve repository understanding.
+
+```text
+                         User Query
+                             │
+                             ▼
+                    Intent Detection
+                             │
+                             ▼
+                       Query Expansion
+                             │
+                ┌────────────┴────────────┐
+                │                         │
+                ▼                         ▼
+       BM25 Keyword Search       Vector Semantic Search
+                │                         │
+                └────────────┬────────────┘
+                             │
+                             ▼
+                  Dependency Graph Expansion
+                             │
+                             ▼
+                       RRF Fusion
+                             │
+                             ▼
+                      Diversification
+                             │
+                             ▼
+                       LLM Re-ranking
+                             │
+                             ▼
+                       Top-K Evidence
+                             │
+                             ▼
+                       Agent Reasoning
+```
+
+This approach allows the system to retrieve:
+
+* Relevant source files
+* Functions
+* Classes
+* Exact code symbols
+* Related documentation
+* Dependencies
+* Semantically similar code
+* Architecture-related components
+
+---
+
+# 📊 Code Quality & Performance Analysis
+
+## SonarQube
+
+SonarQube is used for:
+
+* Bugs
+* Vulnerabilities
+* Code smells
+* Complexity
+* Maintainability
+* Quality gates
+* Static code analysis
+
+## Radon
+
+Radon is used for Python code-quality metrics such as:
+
+* Cyclomatic complexity
+* Maintainability index
+* Halstead metrics
+* Code complexity
+
+## Scalene
+
+Scalene is used for Python performance profiling:
+
+* CPU usage
+* Memory usage
+* Line-level performance
+* Performance bottlenecks
+
+## Test Coverage
+
+The system can analyze test coverage and identify areas of the repository that require additional testing.
+
+---
+
+# 🛡️ Guardrails & Safety
+
+The Guardrail Agent runs before the main analysis workflow.
+
+The system is designed to identify and prevent:
+
+```text
+Prompt Injection
+       │
+       ▼
+Malicious Requests
+       │
+       ▼
+Unsafe Operations
+       │
+       ▼
+Secret / Credential Requests
+       │
+       ▼
+Destructive Actions
+```
+
+Additional PII protection capabilities are supported through Microsoft Presidio components.
+
+---
+
+# ✅ Evaluation & Human Escalation
+
+The Evaluation Agent acts as a quality gate.
+
+```text
+Agent Analysis
+      │
+      ▼
 Evaluation Agent
-    │
-    ├── PASS ───────────────► Final Response
-    │
-    └── FAIL ───────────────► Human Validation / Escalation
-The Manager Agent determines the appropriate workflow from the user's request and routes it to the relevant specialist agents.
+      │
+      ├──────────────► PASS
+      │                 │
+      │                 ▼
+      │            Final Response
+      │
+      └──────────────► FAIL
+                        │
+                        ▼
+                   Escalation
+                        │
+                        ▼
+                 Human Validation
+```
 
-2. Intelligent Repository Analysis
-Repositories can be ingested and analyzed to understand:
+This helps reduce unsupported or low-quality autonomous recommendations.
 
-Source files
+---
 
-Functions and classes
+# 👥 Role-Based Access
 
-APIs and routes
+## 👨‍💻 Developer
 
-Architecture
+The Developer dashboard is designed for software-development workflows.
 
-Configuration
+Typical capabilities include:
 
-Dependencies
+* Repository analysis
+* Codebase queries
+* Code-quality analysis
+* Performance analysis
+* Test coverage analysis
+* Architecture analysis
+* AI-powered repository investigation
+* Generated reports
 
-Documentation
+### Developer Demo
 
-Code relationships
+```text
+User ID:  user@gmail.com
+Password: user@123
+```
 
-Quality metrics
+---
 
-Tree-sitter is used for structured source-code parsing across supported programming languages.
+## 👨‍💼 Manager
 
-3. Hybrid RAG Retrieval
-The retrieval subsystem combines multiple retrieval strategies:
+The Manager dashboard provides additional management and operational functionality.
 
-User Query
-   │
-   ▼
-Intent Detection
-   │
-   ▼
-Query Expansion
-   │
-   ├──────────────► BM25 Keyword Retrieval
-   │
-   └──────────────► Vector Semantic Retrieval
-                         │
-                         ▼
-                 Dependency Graph Expansion
-                         │
-                         ▼
-                  RRF Result Fusion
-                         │
-                         ▼
-                    Diversification
-                         │
-                         ▼
-                  LLM Re-ranking
-                         │
-                         ▼
-                  Top-K Evidence
-This allows the system to retrieve both semantically related code and exact keyword/code-symbol matches.
+Typical capabilities include:
 
-4. Code Quality Intelligence
-The system integrates quality-analysis capabilities including:
+* Repository overview
+* Quality metrics
+* Operational monitoring
+* Execution monitoring
+* System-level insights
+* Escalation visibility
 
-SonarQube for code smells, vulnerabilities, complexity and quality metrics
+### Manager Demo
 
-Radon for Python cyclomatic complexity and maintainability analysis
+```text
+User ID:  admin@gmail.com
+Password: admin@123
+```
 
-Scalene for Python CPU and memory profiling
+---
 
-Test-coverage analysis
+# 🏗️ System Architecture
 
-Architecture review
-
-Quality-gate evaluation
-
-5. Evidence-Grounded Reports
-The quality pipeline retrieves measurable evidence before generating a report.
-
-The generated response can include:
-
-Quality metrics
-
-Test coverage
-
-Complexity
-
-Code smells
-
-Specific findings
-
-File paths
-
-Line numbers
-
-Architecture observations
-
-Refactoring recommendations
-
-6. Guardrails
-A Guardrail Agent runs before the main workflow.
-
-It is designed to identify:
-
-Prompt injection attempts
-
-Malicious requests
-
-Destructive operations
-
-Requests for secrets or credentials
-
-Highly unrelated requests
-
-PII protection is also supported through Microsoft Presidio components.
-
-7. Evaluation and Human Escalation
-The Evaluation Agent acts as a quality gate for generated responses.
-
-If an analysis fails validation, the workflow can:
-
-Mark the result as requiring escalation.
-
-Trigger an escalation alert.
-
-Pause before human validation.
-
-Prevent the workflow from continuing indefinitely.
-
-This provides an additional safety layer around autonomous analysis.
-
-8. Observability
-Langfuse integration provides visibility into:
-
-Agent execution
-
-Workflow transitions
-
-Query sessions
-
-LLM calls
-
-Agent routing
-
-Execution timing
-
-Evaluation information
-
-🏗️ Architecture
-High-Level Architecture
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                     React Frontend                          │
 │                  Vite + TypeScript                          │
 │                                                             │
-│  Login │ Developer Dashboard │ Manager Dashboard            │
+│     Login │ Developer Dashboard │ Manager Dashboard         │
 └──────────────────────────┬──────────────────────────────────┘
                            │
                            │ REST API
@@ -250,8 +437,8 @@ High-Level Architecture
 ┌─────────────────────────────────────────────────────────────┐
 │                    FastAPI Backend                           │
 │                                                             │
-│  Auth │ Repositories │ Sessions │ Queries │ Ingestion       │
-│        Executions │ Operational │ Escalation                │
+│ Authentication │ Repository │ Query │ Sessions              │
+│ Executions │ Ingestion │ Operational │ Escalation            │
 └──────────────────────────┬──────────────────────────────────┘
                            │
                            ▼
@@ -279,91 +466,75 @@ High-Level Architecture
                             ▼
               ┌──────────────────────────┐
               │ PostgreSQL + pgvector    │
-              │ Redis Cache              │
-              │ Langfuse Observability   │
+              │ Redis                    │
+              │ Langfuse                 │
               └──────────────────────────┘
-🧩 Technology Stack
-Backend
-Python 3.12+
+```
 
-FastAPI
+---
 
-Uvicorn
+# 🧩 Technology Stack
 
-SQLAlchemy
+## Backend
 
-Alembic
+* Python 3.12+
+* FastAPI
+* Uvicorn
+* SQLAlchemy
+* Alembic
+* PostgreSQL
+* pgvector
+* Redis
 
-PostgreSQL
+## Agentic AI
 
-pgvector
+* LangGraph
+* LangChain
+* OpenAI / Azure OpenAI
+* LlamaIndex
+* Sentence Transformers
+* Structured LLM Outputs
 
-Redis
+## Code Intelligence
 
-Agentic AI
-LangGraph
+* Tree-sitter
+* SonarQube
+* Radon
+* Scalene
+* GitPython
 
-LangChain
+## Retrieval
 
-OpenAI / Azure OpenAI
+* BM25
+* Vector Search
+* Hybrid Retrieval
+* Reciprocal Rank Fusion
+* Dependency Graph Expansion
+* LLM Re-ranking
 
-LlamaIndex
+## Frontend
 
-Sentence Transformers
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+* React Router
+* Recharts
+* Auth0 React SDK
+* React Markdown
 
-Structured LLM outputs
+## Security & Observability
 
-Code Intelligence
-Tree-sitter
+* Auth0
+* Role-Based Access Control
+* Microsoft Presidio
+* Langfuse
 
-Radon
+---
 
-Scalene
+# 📁 Project Structure
 
-SonarQube
-
-GitPython
-
-Retrieval
-BM25
-
-Vector search
-
-Hybrid retrieval
-
-Reciprocal Rank Fusion (RRF)
-
-Dependency graph expansion
-
-LLM re-ranking
-
-Frontend
-React 19
-
-TypeScript
-
-Vite
-
-Tailwind CSS
-
-React Router
-
-Recharts
-
-Auth0 React SDK
-
-React Markdown
-
-Security & Observability
-Auth0
-
-Role-Based Access Control
-
-Microsoft Presidio
-
-Langfuse
-
-📁 Project Structure
+```text
 .
 ├── backend/
 │   ├── agents/
@@ -373,6 +544,7 @@ Langfuse
 │   │   │   ├── performance_agent.py
 │   │   │   ├── quality_pipeline.py
 │   │   │   └── reporter_agent.py
+│   │   │
 │   │   ├── documentation/
 │   │   ├── evaluation/
 │   │   ├── guardrail/
@@ -399,12 +571,14 @@ Langfuse
 │   ├── services/
 │   ├── tools/
 │   ├── utils/
+│   │
 │   ├── workflows/
 │   │   ├── graphs/
 │   │   ├── nodes/
 │   │   ├── intent_classifier.py
 │   │   ├── router.py
 │   │   └── state.py
+│   │
 │   └── main.py
 │
 ├── frontend/
@@ -419,13 +593,6 @@ Langfuse
 │       └── main.tsx
 │
 ├── Documents/
-│   ├── 01_Secure_Coding_Code_Quality_Guidelines.pdf
-│   ├── 02_Performance_Optimization_Handbook.pdf
-│   ├── 03_Software_Architecture_Design_Principles.pdf
-│   ├── 04_Static_Code_Analysis_Rulebook.pdf
-│   ├── 05_Test_Coverage_Quality_Assurance_Guide.pdf
-│   ├── 06_DevOps_Performance_Monitoring_Guide.pdf
-│   └── 07_Software_Quality_Management_Framework.pdf
 │
 ├── docs/
 │   ├── final_documentation.md
@@ -437,248 +604,378 @@ Langfuse
 ├── Dockerfile
 ├── pyproject.toml
 └── README.md
-🔐 Authentication and Roles
-The frontend uses Auth0 authentication and redirects authenticated users to their role-specific dashboard.
+```
 
-Developer
-The Developer role is intended for repository analysis and day-to-day code intelligence workflows.
+---
 
-Typical capabilities include:
+# 🔄 End-to-End Workflow
 
-Repository interaction
+A typical analysis request follows this process:
 
-Codebase queries
-
-Analysis execution
-
-Quality insights
-
-Retrieval-based investigation
-
-Viewing generated reports
-
-Manager
-The Manager role provides additional operational and management functionality.
-
-Manager-only backend routes are protected by role-based authorization.
-
-🖥️ Using the Demo
-Step 1 — Open the application
-Open:
-
-https://autonomous-code-quality-and-optimization-rg5g.onrender.com/
-
-Step 2 — Sign in
-Use one of the demo accounts.
-
-Developer
-
-User ID: user@gmail.com
-Password: user@123
-Manager
-
-User ID: admin@gmail.com
-Password: admin@123
-Step 3 — Explore the dashboard
-After authentication, the application routes the user to the dashboard associated with the authenticated role.
-
-Step 4 — Try repository/code queries
-Example questions:
-
-Give me an overview of this repository.
-
-Analyze the architecture of the backend.
-
-Identify performance bottlenecks.
-
-What are the major code quality issues?
-
-Analyze test coverage and identify weak areas.
-
-Explain the repository structure.
-
-Generate documentation for the selected code.
-
-Perform a comprehensive architecture, coverage and performance analysis.
-⚙️ Local Development
-Prerequisites
-Install:
-
-Python 3.12+
-
-Node.js 20+
-
-uv
-
-PostgreSQL with pgvector
-
-Redis
-
-Git
-
-SonarQube if local quality scanning is required
-
-Backend Setup
-git clone <repository-url>
-cd <project-directory>
-
-uv sync
-Create the environment file:
-
-cp .env.example .env
-On Windows PowerShell:
-
-Copy-Item .env.example .env
-Update .env with the required database, Redis, LLM, Auth0, Langfuse, Llama and SonarQube settings.
-
-Run database migrations:
-
-uv run alembic upgrade head
-Start the backend:
-
-uv run uvicorn backend.main:app --reload --port 8000
-Backend API:
-
-http://localhost:8000
-FastAPI Swagger:
-
-http://localhost:8000/docs
-🎨 Frontend Setup
-cd frontend
-npm install
-npm run dev
-The Vite development server normally runs at:
-
-http://localhost:5173
-Configure the frontend environment variables according to the Auth0 and backend API configuration used by the deployment.
-
-🧪 Testing and Code Quality
-Run the test suite:
-
-uv run pytest tests/
-Run Radon complexity analysis:
-
-uv run radon cc backend/ -a -s
-Run Scalene profiling:
-
-uv run scalene --html --outfile scalene_report.html backend/main.py
-Run Ruff:
-
-uv run ruff check .
-🐳 Docker
-The project includes a Dockerfile for containerized backend execution.
-
-Build the image:
-
-docker build -t autonomous-code-quality .
-Run the container:
-
-docker run --env-file .env -p 8000:8000 autonomous-code-quality
-For production deployments, configure the container with the appropriate database, Redis, LLM, authentication, observability and analysis-service endpoints.
-
-🔄 Typical Analysis Flow
-A typical end-to-end request follows this sequence:
-
-1. User authenticates
+```text
+1. User Authentication
         ↓
-2. User submits a code-analysis query
+2. User submits analysis request
         ↓
-3. FastAPI receives the request
+3. FastAPI receives request
         ↓
-4. Guardrail validates the query
+4. Guardrail validates request
         ↓
-5. Manager determines the workflow
+5. Manager determines workflow
         ↓
 6. Repository context is retrieved
         ↓
 7. Specialist agents perform analysis
         ↓
-8. External quality tools provide measurable evidence
+8. Static-analysis tools provide evidence
         ↓
-9. Reporter generates a grounded response
+9. Reporter generates grounded response
         ↓
-10. Evaluation Agent validates the result
+10. Evaluation Agent validates result
         ↓
-11. Result is returned to the user
-For high-impact or failed evaluations:
+11. Final response returned to user
+```
 
-Evaluation Failure
-       ↓
-Escalation
-       ↓
-Human Validation
-       ↓
-Workflow Termination
-This design helps reduce unsupported recommendations and provides an explicit quality-control stage.
+---
 
-📚 Knowledge Base
-The Documents/ directory contains reference material used by the system's knowledge and analysis workflows, including:
+# 🖥️ Example Queries
 
-Secure coding
+After logging into the demo, try questions such as:
 
-Performance optimization
+```text
+Give me an overview of this repository.
 
-Software architecture
+Analyze the architecture of the backend.
 
-Static analysis
+Identify potential performance bottlenecks.
 
-Test coverage
+What are the major code-quality issues?
 
-DevOps performance monitoring
+Analyze test coverage and identify weak areas.
 
-Software quality management
+Identify functions with high complexity.
 
-These documents can be ingested into the system's retrieval layer to provide additional domain-specific context.
+What are the most important SonarQube findings?
 
-🔭 Design Principles
-The project follows several core principles:
+Explain the repository structure.
 
-Evidence Before Generation
-LLMs should generate recommendations from retrieved code and measurable analysis results rather than inventing repository facts.
+What parts of this codebase should be refactored?
 
-Specialized Agents
-Each major responsibility is separated into an agent instead of relying on a single general-purpose prompt.
+How can the performance of this application be improved?
 
-Deterministic Quality Checks
-Where possible, objective tools such as SonarQube, Radon and coverage reports are used to supplement LLM reasoning.
+Perform a comprehensive architecture, coverage and performance analysis.
+```
 
-Hybrid Retrieval
-Keyword and semantic retrieval are combined to improve recall for both natural-language questions and exact source-code references.
+---
 
-Safety First
-Guardrails, validation and escalation are included before allowing analysis results to be treated as final.
+# ⚙️ Local Development
 
-Observability
-Agent and workflow execution can be traced to make the system easier to debug, evaluate and improve.
+## Prerequisites
 
-📖 Documentation
-Additional project documentation is available in the docs/ directory:
+Install:
 
-docs/final_documentation.md — detailed project documentation
+* Python 3.12+
+* Node.js 20+
+* Git
+* uv
+* PostgreSQL
+* pgvector
+* Redis
+* Docker
+* SonarQube (optional for local quality analysis)
 
-docs/project_approach.md — project approach and implementation details
+---
 
-docs/final_readme.md — previous project overview
+# 🔧 Backend Setup
 
-Documents/ — domain-specific quality and engineering reference documents
+Clone the repository:
 
-⚠️ Demo Security Notice
-The credentials in this README are demo credentials intentionally provided for evaluation/testing.
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
 
-Do not use these credentials for production systems.
+Install Python dependencies:
+
+```bash
+uv sync
+```
+
+Create the environment file.
+
+### Windows PowerShell
+
+```powershell
+Copy-Item .env.example .env
+```
+
+### Linux / macOS
+
+```bash
+cp .env.example .env
+```
+
+Configure the required environment variables in `.env`.
+
+Example:
+
+```text
+DATABASE_URL=
+REDIS_URL=
+
+AUTH0_DOMAIN=
+AUTH0_CLIENT_ID=
+AUTH0_CLIENT_SECRET=
+API_AUDIENCE=
+
+OPENAI_API_KEY=
+
+AZURE_OPENAI_API_KEY=
+AZURE_OPENAI_ENDPOINT=
+AZURE_OPENAI_LLM_DEPLOYMENT=
+
+LANGFUSE_PUBLIC_KEY=
+LANGFUSE_SECRET_KEY=
+LANGFUSE_HOST=
+
+SONAR_HOST_URL=
+SONAR_TOKEN=
+```
+
+Run database migrations:
+
+```bash
+uv run alembic upgrade head
+```
+
+Start the backend:
+
+```bash
+uv run uvicorn backend.main:app --reload --port 8000
+```
+
+Backend:
+
+```text
+http://localhost:8000
+```
+
+Swagger API documentation:
+
+```text
+http://localhost:8000/docs
+```
+
+---
+
+# 🎨 Frontend Setup
+
+Move into the frontend directory:
+
+```bash
+cd frontend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The frontend will normally be available at:
+
+```text
+http://localhost:5173
+```
+
+Configure the required frontend environment variables for:
+
+* Backend API
+* Auth0 domain
+* Auth0 client ID
+* API audience
+* Redirect URLs
+
+---
+
+# 🐳 Docker
+
+Build the backend image:
+
+```bash
+docker build -t autonomous-code-quality .
+```
+
+Run the container:
+
+```bash
+docker run --env-file .env -p 8000:8000 autonomous-code-quality
+```
+
+Docker can also be used to provide isolated environments for language-specific code-analysis workers.
+
+---
+
+# 🧪 Testing & Code Quality
+
+Run the test suite:
+
+```bash
+uv run pytest tests/
+```
+
+Run Ruff:
+
+```bash
+uv run ruff check .
+```
+
+Run Radon:
+
+```bash
+uv run radon cc backend/ -a -s
+```
+
+Run Scalene:
+
+```bash
+uv run scalene --html --outfile scalene_report.html backend/main.py
+```
+
+---
+
+# 📚 Knowledge Base
+
+The project contains engineering and software-quality reference documents that can be used by the retrieval system.
+
+The knowledge base covers areas including:
+
+* Secure coding
+* Code quality
+* Performance optimization
+* Software architecture
+* Static code analysis
+* Test coverage
+* DevOps performance monitoring
+* Software quality management
+
+These documents provide additional domain knowledge for the AI agents.
+
+---
+
+# 📈 Observability
+
+Langfuse is used to provide visibility into the Agentic AI workflow.
+
+Observability can include:
+
+* Agent traces
+* LLM calls
+* Workflow transitions
+* Query sessions
+* Execution duration
+* Agent routing
+* Evaluation results
+
+This allows the system to be monitored and debugged throughout the entire agentic workflow.
+
+---
+
+# 🎯 Design Principles
+
+## Evidence Before Generation
+
+AI-generated recommendations should be grounded in actual repository data, retrieved source code and measurable quality metrics.
+
+## Specialized Agents
+
+Different software-engineering responsibilities are separated into specialized agents rather than relying on one general-purpose AI prompt.
+
+## Deterministic Quality Checks
+
+Traditional engineering tools such as SonarQube, Radon, Scalene and test coverage provide objective evidence alongside LLM reasoning.
+
+## Hybrid Retrieval
+
+Keyword and semantic retrieval are combined to improve accuracy for both natural-language questions and exact source-code references.
+
+## Safety First
+
+Guardrails, evaluation and escalation mechanisms reduce unsafe or unsupported autonomous actions.
+
+## Observability
+
+Agent and workflow execution can be monitored to support debugging, evaluation and continuous improvement.
+
+---
+
+# 📖 Documentation
+
+Additional documentation can be found in the `docs/` directory.
+
+```text
+docs/
+├── final_documentation.md
+├── project_approach.md
+└── final_readme.md
+```
+
+The `Documents/` directory contains additional software-engineering and code-quality reference material.
+
+---
+
+# 🚀 Future Enhancements
+
+Potential future improvements include:
+
+* Additional programming-language support
+* Automated pull-request analysis
+* Automated code-fix generation
+* GitHub/GitLab integration
+* Continuous repository monitoring
+* Automated quality-regression detection
+* Advanced dependency vulnerability analysis
+* Cross-repository architecture analysis
+* Advanced performance profiling
+* Automated refactoring suggestions
+* Human-in-the-loop approval workflows
+* CI/CD quality-gate integration
+
+---
+
+# ⚠️ Demo Security Notice
+
+The credentials included in this README are **demo credentials intentionally provided for project evaluation**.
+
+They should **not** be used for production systems.
 
 For production deployments:
 
-Use strong unique credentials.
+* Use strong unique credentials.
+* Never commit production secrets to Git.
+* Store secrets using a secure secret manager.
+* Rotate exposed credentials when necessary.
+* Restrict Auth0 callback URLs.
+* Restrict Auth0 logout URLs.
+* Restrict CORS origins.
+* Use production-specific API keys.
+* Use production-specific database credentials.
+* Enable appropriate monitoring and audit logging.
 
-Never commit secrets to Git.
+---
 
-Store credentials in a secure secret manager.
+# 🏆 Project Summary
 
-Restrict Auth0 callback/logout URLs.
+The **Autonomous Code Quality & Optimization Intelligence System** demonstrates how **Agentic AI, RAG, static analysis, performance profiling, software-quality metrics and workflow orchestration** can be combined into a practical software-engineering platform.
 
-Restrict backend CORS origins.
+The system moves beyond simple AI code generation toward:
 
-Rotate exposed demo credentials when necessary.
+> **Autonomous, evidence-driven repository understanding and software-quality optimization.**
 
-Use production-specific database and API credentials.
+---
